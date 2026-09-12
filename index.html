@@ -1,0 +1,2763 @@
+<!--
+  ============================================================
+  GIG-SAATHI — High-Fidelity Interactive UI Prototype
+  ============================================================
+  Team:       TECH TITANS
+  Problem ID: SIH26089
+  Event:      Smart India Hackathon 2026
+  ------------------------------------------------------------
+  PROTOTYPE NOTE:
+  This file is a self-contained Vanilla HTML/CSS/JS prototype
+  built for rapid hackathon demonstration. It uses mock data
+  and simulated interactions to represent the planned full
+  React.js + FastAPI + PostgreSQL implementation.
+
+  Full stack architecture (planned):
+    Frontend  → React.js + Tailwind CSS (see src/components/)
+    Backend   → Python FastAPI (see backend/api/)
+    Database  → PostgreSQL 15
+    Cache     → Redis
+    APIs      → e-Shram, UMANG, Razorpay, Google Maps
+
+  TODO: Decompose each section below into individual
+        React components (see src/components/ for stubs).
+  ============================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GIG-SAATHI — Fair Work. Trusted Services. Stronger Cooperatives.</title>
+  <meta name="description" content="GIG-SAATHI is a cooperative-oriented platform connecting households and institutions directly with verified local workers for fair wages and trusted services." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    /* ===== CSS RESET & TOKENS ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --green-900: #1a3a2a;
+      --green-800: #1e4d35;
+      --green-700: #236040;
+      --green-600: #2d7a51;
+      --green-500: #3a9463;
+      --green-400: #4db07a;
+      --green-100: #e8f5ee;
+      --green-50:  #f0faf5;
+      --orange-600: #c45e1a;
+      --orange-500: #d9732a;
+      --orange-400: #e8894a;
+      --orange-100: #fdf0e6;
+      --orange-50:  #fef8f2;
+      --bg:         #f7f4ef;
+      --bg-card:    #ffffff;
+      --text-900:   #1c1c1e;
+      --text-700:   #3c3c40;
+      --text-500:   #6c6c72;
+      --text-300:   #aeaeb2;
+      --border:     #e5e0d8;
+      --shadow-sm:  0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md:  0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.06);
+      --shadow-lg:  0 8px 24px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.06);
+      --radius-sm:  6px;
+      --radius-md:  10px;
+      --radius-lg:  16px;
+      --radius-xl:  24px;
+      --font-main: 'Inter', 'Noto Sans Devanagari', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-main);
+      background: var(--bg);
+      color: var(--text-900);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    button { font-family: inherit; cursor: pointer; border: none; outline: none; }
+    input, select, textarea { font-family: inherit; }
+    img { max-width: 100%; }
+
+    /* ===== UTILITIES ===== */
+    .hidden { display: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+    /* ===== NAVBAR ===== */
+    #navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(247,244,239,0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .logo-mark {
+      width: 36px; height: 36px;
+      background: var(--green-700);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-mark svg { color: white; width: 20px; height: 20px; }
+    .logo-text { font-size: 1.1rem; font-weight: 800; color: var(--green-800); letter-spacing: -0.02em; }
+    .logo-text span { color: var(--orange-500); }
+    .nav-spacer { flex: 1; }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-link {
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-700);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      background: none;
+    }
+    .nav-link:hover { background: var(--green-100); color: var(--green-700); }
+    .nav-btn-primary {
+      padding: 0.45rem 1rem;
+      background: var(--green-700);
+      color: white;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .nav-btn-primary:hover { background: var(--green-800); transform: translateY(-1px); }
+    .lang-btn {
+      display: flex; align-items: center; gap: 0.3rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-500);
+      border: 1px solid var(--border);
+      background: white;
+      transition: all 0.15s;
+    }
+    .lang-btn:hover { border-color: var(--green-400); color: var(--green-700); }
+    .lang-btn.active { background: var(--green-100); border-color: var(--green-400); color: var(--green-700); }
+
+    /* Role switcher */
+    .role-switcher {
+      display: flex;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 3px;
+      gap: 2px;
+    }
+    .role-btn {
+      padding: 0.3rem 0.75rem;
+      border-radius: 7px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-500);
+      background: none;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .role-btn.active { background: var(--green-700); color: white; }
+    .role-btn:hover:not(.active) { background: var(--green-50); color: var(--green-700); }
+    .demo-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--orange-500);
+      padding: 0.15rem 0.4rem;
+      background: var(--orange-50);
+      border-radius: 4px;
+      border: 1px solid var(--orange-100);
+    }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.4rem;
+      color: var(--text-700);
+    }
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .mobile-menu.open { display: flex; }
+
+    /* ===== SCREENS ===== */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ===== SCREEN 1: HOME ===== */
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 1.25rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--green-100);
+      color: var(--green-700);
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      margin-bottom: 1.25rem;
+    }
+    .hero-eyebrow svg { width: 13px; height: 13px; }
+    .hero-title {
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      color: var(--text-900);
+      margin-bottom: 0.25rem;
+    }
+    .hero-title .brand { color: var(--green-700); }
+    .hero-tagline {
+      font-size: clamp(1rem, 1.5vw, 1.2rem);
+      font-weight: 600;
+      color: var(--orange-600);
+      margin-bottom: 1rem;
+      font-style: italic;
+    }
+    .hero-desc {
+      font-size: 1rem;
+      color: var(--text-500);
+      line-height: 1.7;
+      max-width: 480px;
+      margin-bottom: 2rem;
+    }
+    .hero-cta { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--green-700);
+      color: white;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+      box-shadow: 0 2px 8px rgba(45,122,81,0.3);
+    }
+    .btn-primary:hover { background: var(--green-800); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(45,122,81,0.35); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: white;
+      color: var(--green-700);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: 1.5px solid var(--green-400);
+      transition: all 0.15s;
+    }
+    .btn-secondary:hover { background: var(--green-50); transform: translateY(-2px); }
+    .btn-text {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.875rem; font-weight: 500; color: var(--text-500);
+      background: none; text-decoration: underline; text-underline-offset: 3px;
+    }
+    .btn-text:hover { color: var(--green-700); }
+    
+    /* Hero visual */
+    .hero-visual {
+      background: white;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+    .hero-visual-header {
+      background: var(--green-700);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .hero-visual-header .title { color: white; font-weight: 600; font-size: 0.9rem; }
+    .hero-visual-header .subtitle { color: rgba(255,255,255,0.7); font-size: 0.75rem; }
+    .live-badge {
+      display: flex; align-items: center; gap: 0.3rem;
+      background: rgba(255,255,255,0.15);
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      color: white;
+    }
+    .live-dot { width: 6px; height: 6px; background: #4ade80; border-radius: 50%; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+    
+    .mini-worker-list { padding: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .mini-worker {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+    }
+    .mini-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.85rem; color: white;
+      flex-shrink: 0;
+    }
+    .mini-worker-info { flex: 1; }
+    .mini-worker-name { font-size: 0.82rem; font-weight: 600; color: var(--text-900); }
+    .mini-worker-skill { font-size: 0.73rem; color: var(--text-500); }
+    .mini-rating { font-size: 0.75rem; font-weight: 600; color: var(--green-700); }
+    .mini-price { font-size: 0.78rem; font-weight: 700; color: var(--text-900); }
+    .mini-badge {
+      display: flex; align-items: center; gap: 0.2rem;
+      font-size: 0.65rem; font-weight: 600; color: var(--green-700);
+      background: var(--green-100); padding: 0.15rem 0.4rem; border-radius: 4px;
+    }
+    .mini-badge svg { width: 10px; height: 10px; }
+
+    /* Service categories */
+    .section { max-width: 1200px; margin: 0 auto; padding: 2.5rem 1.25rem; }
+    .section-title {
+      font-size: 1.4rem; font-weight: 700; color: var(--text-900); margin-bottom: 0.4rem;
+    }
+    .section-subtitle { font-size: 0.9rem; color: var(--text-500); margin-bottom: 1.5rem; }
+    
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .service-cat-card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .service-cat-card:hover { border-color: var(--green-400); background: var(--green-50); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .service-cat-card.selected { border-color: var(--green-600); background: var(--green-100); }
+    .service-cat-icon {
+      width: 44px; height: 44px;
+      background: var(--green-100);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 0.6rem;
+    }
+    .service-cat-icon svg { width: 22px; height: 22px; color: var(--green-700); }
+    .service-cat-name { font-size: 0.82rem; font-weight: 600; color: var(--text-700); }
+
+    /* Value props */
+    .value-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+    .value-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .value-icon {
+      width: 48px; height: 48px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .value-icon svg { width: 24px; height: 24px; }
+    .value-title { font-size: 1rem; font-weight: 700; color: var(--text-900); margin-bottom: 0.4rem; }
+    .value-desc { font-size: 0.875rem; color: var(--text-500); line-height: 1.6; }
+    
+    /* Stats bar */
+    .stats-bar {
+      background: var(--green-800);
+      padding: 1.5rem 1.25rem;
+      margin: 0;
+    }
+    .stats-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; text-align: center; }
+    .stat-num { font-size: 1.6rem; font-weight: 800; color: white; }
+    .stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.65); font-weight: 500; margin-top: 0.1rem; }
+
+    /* ===== SCREEN 2: FIND SERVICE ===== */
+    .find-header {
+      background: var(--green-800);
+      padding: 2.5rem 1.25rem;
+    }
+    .find-header-inner { max-width: 800px; margin: 0 auto; }
+    .find-title { font-size: 1.75rem; font-weight: 800; color: white; margin-bottom: 0.25rem; }
+    .find-subtitle { color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .search-bar {
+      display: flex;
+      gap: 0.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 0.4rem;
+      box-shadow: var(--shadow-md);
+    }
+    .search-input-wrap { display: flex; align-items: center; gap: 0.5rem; flex: 1; padding: 0 0.5rem; }
+    .search-input-wrap svg { width: 18px; height: 18px; color: var(--text-300); flex-shrink: 0; }
+    .search-input {
+      border: none; outline: none; width: 100%; font-size: 0.9rem; color: var(--text-900);
+      background: transparent;
+    }
+    .search-divider { width: 1px; background: var(--border); align-self: stretch; margin: 0.3rem 0; }
+    .location-select {
+      display: flex; align-items: center; gap: 0.4rem;
+      padding: 0 0.75rem; font-size: 0.85rem; color: var(--text-500);
+      background: none; border: none; cursor: pointer;
+      white-space: nowrap;
+    }
+    .location-select svg { width: 15px; height: 15px; color: var(--green-600); }
+    .search-btn {
+      padding: 0.6rem 1.25rem;
+      background: var(--green-700);
+      color: white;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .search-btn:hover { background: var(--green-800); }
+    
+    .cat-pills { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+    .cat-pill {
+      display: flex; align-items: center; gap: 0.4rem;
+      padding: 0.4rem 0.9rem;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 999px;
+      font-size: 0.8rem;
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .cat-pill:hover, .cat-pill.active { background: white; color: var(--green-800); }
+    
+    /* Worker list */
+    .worker-list-area { max-width: 1200px; margin: 0 auto; padding: 2rem 1.25rem; }
+    .filter-bar {
+      display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+    }
+    .filter-label { font-size: 0.85rem; color: var(--text-500); font-weight: 500; }
+    .filter-chip {
+      padding: 0.3rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.78rem;
+      color: var(--text-700);
+      background: white;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-chip:hover { border-color: var(--green-400); color: var(--green-700); }
+    .filter-chip.active { background: var(--green-100); border-color: var(--green-400); color: var(--green-700); font-weight: 600; }
+    .results-count { margin-left: auto; font-size: 0.82rem; color: var(--text-500); }
+    
+    .worker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+    .worker-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+    }
+    .worker-card:hover { box-shadow: var(--shadow-md); border-color: var(--green-300,#a0d4b8); transform: translateY(-2px); }
+    .worker-card-top { display: flex; gap: 0.9rem; margin-bottom: 0.9rem; }
+    .worker-avatar {
+      width: 52px; height: 52px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1.1rem; color: white;
+      flex-shrink: 0;
+    }
+    .worker-main { flex: 1; min-width: 0; }
+    .worker-name { font-size: 1rem; font-weight: 700; color: var(--text-900); }
+    .worker-skill { font-size: 0.82rem; color: var(--text-500); margin-top: 0.1rem; }
+    .worker-coop { font-size: 0.75rem; color: var(--green-700); font-weight: 500; margin-top: 0.15rem; }
+    .verified-badge {
+      display: inline-flex; align-items: center; gap: 0.25rem;
+      background: var(--green-100); color: var(--green-700);
+      padding: 0.2rem 0.5rem; border-radius: 4px;
+      font-size: 0.7rem; font-weight: 700;
+    }
+    .verified-badge svg { width: 11px; height: 11px; }
+    .worker-stats { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+    .stat-pill {
+      display: flex; align-items: center; gap: 0.3rem;
+      font-size: 0.78rem; color: var(--text-700);
+      background: var(--bg); padding: 0.25rem 0.6rem;
+      border-radius: 999px; border: 1px solid var(--border);
+    }
+    .stat-pill svg { width: 12px; height: 12px; }
+    .rating-star { color: #f59e0b; }
+    .avail-badge {
+      position: absolute; top: 0.9rem; right: 0.9rem;
+      padding: 0.2rem 0.5rem; border-radius: 4px;
+      font-size: 0.68rem; font-weight: 700;
+    }
+    .avail-available { background: #dcfce7; color: #166534; }
+    .avail-busy { background: #fee2e2; color: #991b1b; }
+    .worker-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid var(--border); }
+    .worker-price { font-size: 1rem; font-weight: 700; color: var(--text-900); }
+    .worker-price span { font-size: 0.75rem; font-weight: 400; color: var(--text-500); }
+    .btn-view {
+      padding: 0.45rem 1rem;
+      background: var(--green-700);
+      color: white; border-radius: var(--radius-sm);
+      font-size: 0.82rem; font-weight: 600;
+      transition: background 0.15s;
+    }
+    .btn-view:hover { background: var(--green-800); }
+
+    /* ===== SCREEN 3: WORKER PROFILE ===== */
+    .profile-layout {
+      max-width: 900px; margin: 0 auto; padding: 2rem 1.25rem;
+      display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem;
+      align-items: start;
+    }
+    .profile-sidebar {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      position: sticky; top: 80px;
+    }
+    .profile-avatar-lg {
+      width: 80px; height: 80px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1.8rem; color: white;
+      margin: 0 auto 1rem;
+    }
+    .profile-name { text-align: center; font-size: 1.15rem; font-weight: 700; color: var(--text-900); }
+    .profile-skill { text-align: center; font-size: 0.85rem; color: var(--text-500); margin-top: 0.15rem; }
+    .profile-coop { text-align: center; font-size: 0.8rem; color: var(--green-700); font-weight: 500; margin-top: 0.25rem; }
+    .profile-badges { display: flex; flex-direction: column; gap: 0.4rem; margin: 1rem 0; }
+    .profile-badge {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.4rem 0.6rem;
+      background: var(--green-50);
+      border: 1px solid var(--green-100);
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem; font-weight: 600; color: var(--green-700);
+    }
+    .profile-badge svg { width: 14px; height: 14px; }
+    .profile-stat-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.6rem; margin: 1rem 0;
+    }
+    .profile-stat { text-align: center; }
+    .profile-stat-num { font-size: 1.3rem; font-weight: 800; color: var(--text-900); }
+    .profile-stat-label { font-size: 0.7rem; color: var(--text-500); }
+    .btn-book {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--green-700);
+      color: white; border-radius: var(--radius-md);
+      font-size: 0.95rem; font-weight: 700;
+      transition: background 0.15s;
+      margin-top: 0.75rem;
+    }
+    .btn-book:hover { background: var(--green-800); }
+    
+    .profile-main { display: flex; flex-direction: column; gap: 1.25rem; }
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .card-title { font-size: 0.95rem; font-weight: 700; color: var(--text-900); margin-bottom: 0.9rem; }
+    .skill-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .skill-chip {
+      padding: 0.3rem 0.75rem; background: var(--green-100);
+      border-radius: 999px; font-size: 0.8rem; font-weight: 500; color: var(--green-700);
+    }
+    .review-item { padding: 0.9rem 0; border-bottom: 1px solid var(--border); }
+    .review-item:last-child { border-bottom: none; }
+    .review-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
+    .review-name { font-size: 0.85rem; font-weight: 600; color: var(--text-900); }
+    .review-stars { color: #f59e0b; font-size: 0.85rem; }
+    .review-date { font-size: 0.75rem; color: var(--text-300); margin-left: auto; }
+    .review-text { font-size: 0.85rem; color: var(--text-700); line-height: 1.5; }
+    .slots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+    .slot-btn {
+      padding: 0.4rem; text-align: center;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem; font-weight: 500;
+      color: var(--text-700); cursor: pointer; transition: all 0.15s;
+      background: white;
+    }
+    .slot-btn:hover { border-color: var(--green-400); background: var(--green-50); color: var(--green-700); }
+    .slot-btn.unavailable { background: var(--bg); color: var(--text-300); cursor: not-allowed; text-decoration: line-through; }
+
+    /* ===== BOOKING MODAL / FLOW ===== */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.45);
+      align-items: center; justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: white;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      width: 100%; max-width: 480px;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-title { font-size: 1.05rem; font-weight: 700; color: var(--text-900); }
+    .modal-close {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--bg); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text-500); transition: all 0.15s;
+    }
+    .modal-close:hover { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+    .modal-body { padding: 1.5rem; }
+    .booking-summary {
+      background: var(--green-50);
+      border: 1px solid var(--green-100);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .booking-row { display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0; }
+    .booking-row-label { font-size: 0.82rem; color: var(--text-500); }
+    .booking-row-val { font-size: 0.85rem; font-weight: 600; color: var(--text-900); }
+    .form-row { margin-bottom: 1rem; }
+    .form-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-700); margin-bottom: 0.35rem; }
+    .form-input {
+      width: 100%; padding: 0.6rem 0.85rem;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      font-size: 0.9rem; color: var(--text-900);
+      transition: border-color 0.15s; background: white;
+    }
+    .form-input:focus { border-color: var(--green-500); outline: none; box-shadow: 0 0 0 3px rgba(45,122,81,0.1); }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .price-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1rem; background: var(--bg); border-radius: var(--radius-sm);
+      margin-bottom: 1rem;
+    }
+    .price-label { font-size: 0.9rem; font-weight: 600; color: var(--text-700); }
+    .price-amount { font-size: 1.2rem; font-weight: 800; color: var(--green-700); }
+    .btn-confirm {
+      width: 100%; padding: 0.85rem;
+      background: var(--green-700); color: white;
+      border-radius: var(--radius-md); font-size: 1rem; font-weight: 700;
+      transition: background 0.15s;
+    }
+    .btn-confirm:hover { background: var(--green-800); }
+    
+    /* Booking confirmed state */
+    .booking-confirmed {
+      text-align: center; padding: 2rem 1.5rem;
+    }
+    .confirmed-icon {
+      width: 72px; height: 72px;
+      background: var(--green-100); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+    }
+    .confirmed-icon svg { width: 36px; height: 36px; color: var(--green-600); }
+    .confirmed-title { font-size: 1.4rem; font-weight: 800; color: var(--text-900); margin-bottom: 0.4rem; }
+    .confirmed-subtitle { font-size: 0.9rem; color: var(--text-500); margin-bottom: 1.5rem; }
+    .confirmed-details {
+      background: var(--bg);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+    .confirmed-id {
+      font-size: 0.78rem; font-weight: 600; color: var(--green-700);
+      letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.75rem;
+    }
+    .confirmed-btns { display: flex; gap: 0.75rem; }
+    .btn-pay {
+      flex: 1; padding: 0.75rem;
+      background: var(--green-700); color: white;
+      border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 700;
+      transition: background 0.15s;
+    }
+    .btn-pay:hover { background: var(--green-800); }
+    .btn-track {
+      flex: 1; padding: 0.75rem;
+      background: white; color: var(--green-700);
+      border: 1.5px solid var(--green-400);
+      border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 700;
+      transition: all 0.15s;
+    }
+    .btn-track:hover { background: var(--green-50); }
+
+    /* ===== PAYMENT ===== */
+    .payment-methods { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; }
+    .payment-method {
+      flex: 1; padding: 0.85rem 0.5rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      text-align: center; cursor: pointer; transition: all 0.15s;
+      background: white;
+    }
+    .payment-method:hover { border-color: var(--green-400); }
+    .payment-method.selected { border-color: var(--green-600); background: var(--green-50); }
+    .payment-method-icon { font-size: 1.4rem; margin-bottom: 0.25rem; }
+    .payment-method-label { font-size: 0.78rem; font-weight: 600; color: var(--text-700); }
+    .payment-amount-display {
+      text-align: center; padding: 1.5rem;
+      background: var(--green-50); border-radius: var(--radius-md); margin-bottom: 1.25rem;
+    }
+    .payment-amt { font-size: 2.2rem; font-weight: 800; color: var(--green-700); }
+    .payment-desc { font-size: 0.82rem; color: var(--text-500); margin-top: 0.25rem; }
+    .btn-pay-now {
+      width: 100%; padding: 0.9rem;
+      background: var(--green-700); color: white;
+      border-radius: var(--radius-md); font-size: 1rem; font-weight: 700;
+      transition: all 0.15s;
+    }
+    .btn-pay-now:hover { background: var(--green-800); }
+    
+    /* Payment success */
+    .payment-success { text-align: center; padding: 1.5rem; }
+    .success-icon-wrap {
+      width: 80px; height: 80px;
+      background: var(--green-100); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+      animation: scaleIn 0.4s ease-out;
+    }
+    @keyframes scaleIn { from{transform:scale(0.5);opacity:0;} to{transform:scale(1);opacity:1;} }
+    .success-icon-wrap svg { width: 40px; height: 40px; color: var(--green-600); }
+    .tx-details { background: var(--bg); border-radius: var(--radius-md); padding: 1rem; text-align: left; margin: 1rem 0; }
+    .tx-row { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid var(--border); }
+    .tx-row:last-child { border-bottom: none; }
+    .tx-label { font-size: 0.82rem; color: var(--text-500); }
+    .tx-val { font-size: 0.85rem; font-weight: 600; color: var(--text-900); }
+    .btn-invoice {
+      width: 100%; padding: 0.75rem;
+      background: white; color: var(--green-700);
+      border: 1.5px solid var(--green-400);
+      border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 700;
+      margin-top: 0.75rem; transition: all 0.15s;
+    }
+    .btn-invoice:hover { background: var(--green-50); }
+
+    /* ===== TRACKING SCREEN ===== */
+    #screen-tracking { background: #f0f0f0; min-height: calc(100vh - 64px); }
+    .tracking-layout {
+      max-width: 900px; margin: 0 auto; padding: 1.5rem 1.25rem;
+      display: grid; grid-template-columns: 1fr 320px; gap: 1.25rem;
+    }
+    .map-container {
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      min-height: 420px;
+      position: relative;
+    }
+    .map-svg-area { width: 100%; height: 100%; min-height: 420px; background: #e8f0f8; position: relative; }
+    .map-label { font-size: 0.7rem; font-weight: 600; }
+    .sos-float {
+      position: absolute; bottom: 1rem; right: 1rem;
+      background: #dc2626; color: white;
+      padding: 0.6rem 1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem; font-weight: 700;
+      display: flex; align-items: center; gap: 0.4rem;
+      box-shadow: 0 4px 12px rgba(220,38,38,0.4);
+      cursor: pointer; transition: all 0.15s;
+      animation: sosGlow 2s infinite;
+    }
+    @keyframes sosGlow { 0%,100%{box-shadow:0 4px 12px rgba(220,38,38,0.4);} 50%{box-shadow:0 4px 20px rgba(220,38,38,0.7);} }
+    .sos-float:hover { background: #b91c1c; transform: scale(1.05); }
+    
+    .tracking-panel { display: flex; flex-direction: column; gap: 1rem; }
+    .tracking-card {
+      background: white; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .eta-display {
+      text-align: center; padding: 1.25rem;
+      background: var(--green-50); border-radius: var(--radius-md); margin-bottom: 1rem;
+    }
+    .eta-num { font-size: 2.5rem; font-weight: 800; color: var(--green-700); line-height: 1; }
+    .eta-label { font-size: 0.8rem; color: var(--text-500); margin-top: 0.2rem; }
+    .eta-worker { font-size: 0.9rem; font-weight: 600; color: var(--text-700); margin-top: 0.5rem; }
+    .status-steps { display: flex; flex-direction: column; gap: 0.1rem; }
+    .status-step { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0; }
+    .step-dot {
+      width: 20px; height: 20px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-dot.done { background: var(--green-600); }
+    .step-dot.done svg { width: 10px; height: 10px; color: white; }
+    .step-dot.active { background: var(--orange-500); }
+    .step-dot.active::after {
+      content: ''; width: 8px; height: 8px; background: white; border-radius: 50%;
+    }
+    .step-dot.pending { background: var(--border); }
+    .step-text { font-size: 0.85rem; }
+    .step-text.done { font-weight: 600; color: var(--text-900); }
+    .step-text.active { font-weight: 600; color: var(--orange-600); }
+    .step-text.pending { color: var(--text-300); }
+    .step-line { width: 2px; height: 16px; background: var(--border); margin-left: 9px; }
+    .step-line.done { background: var(--green-500); }
+
+    /* ===== WORKER DASHBOARD ===== */
+    .worker-dash {
+      max-width: 900px; margin: 0 auto; padding: 1.5rem 1.25rem;
+    }
+    .dash-greeting { margin-bottom: 1.5rem; }
+    .dash-greeting h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-900); }
+    .dash-greeting p { font-size: 0.9rem; color: var(--text-500); }
+    .dash-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .dash-stat-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .dash-stat-icon {
+      width: 36px; height: 36px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 0.6rem;
+    }
+    .dash-stat-icon svg { width: 18px; height: 18px; }
+    .dash-stat-val { font-size: 1.4rem; font-weight: 800; color: var(--text-900); }
+    .dash-stat-label { font-size: 0.75rem; color: var(--text-500); margin-top: 0.1rem; }
+    .dash-stat-trend { font-size: 0.72rem; color: var(--green-600); font-weight: 500; margin-top: 0.15rem; }
+    
+    .dash-grid { display: grid; grid-template-columns: 1fr 280px; gap: 1.25rem; }
+    .job-requests { display: flex; flex-direction: column; gap: 1rem; }
+    
+    .job-card {
+      background: white; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .job-card-header { display: flex; gap: 0.9rem; margin-bottom: 0.9rem; }
+    .job-service-icon {
+      width: 44px; height: 44px; background: var(--orange-100);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .job-service-icon svg { width: 22px; height: 22px; color: var(--orange-600); }
+    .job-main { flex: 1; }
+    .job-title { font-size: 0.95rem; font-weight: 700; color: var(--text-900); }
+    .job-customer { font-size: 0.82rem; color: var(--text-500); margin-top: 0.1rem; }
+    .job-meta { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
+    .job-meta-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; color: var(--text-500); }
+    .job-meta-item svg { width: 13px; height: 13px; }
+    .job-price { font-size: 1.1rem; font-weight: 800; color: var(--green-700); margin-bottom: 0.9rem; }
+    .job-actions { display: flex; gap: 0.75rem; }
+    .btn-accept {
+      flex: 1; padding: 0.65rem;
+      background: var(--green-700); color: white;
+      border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 700;
+      transition: background 0.15s;
+    }
+    .btn-accept:hover { background: var(--green-800); }
+    .btn-reject {
+      padding: 0.65rem 1rem;
+      background: white; color: var(--text-500);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 600;
+      transition: all 0.15s;
+    }
+    .btn-reject:hover { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+    
+    .job-status-accepted { display: none; }
+    .job-status-accepted.show { display: block; }
+    .status-accepted-banner {
+      background: var(--green-100); border: 1px solid var(--green-200,#a7d9bb);
+      border-radius: var(--radius-sm); padding: 0.6rem 0.9rem;
+      font-size: 0.85rem; font-weight: 600; color: var(--green-700);
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .status-accepted-banner svg { width: 16px; height: 16px; }
+    .job-progress-btns { display: flex; gap: 0.75rem; }
+    .btn-start {
+      flex: 1; padding: 0.65rem;
+      background: var(--orange-500); color: white;
+      border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 700;
+      transition: background 0.15s;
+    }
+    .btn-start:hover { background: var(--orange-600); }
+    .btn-complete {
+      flex: 1; padding: 0.65rem;
+      background: var(--green-600); color: white;
+      border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 700;
+      transition: background 0.15s;
+    }
+    .btn-complete:hover { background: var(--green-700); }
+    
+    /* Welfare card */
+    .welfare-card {
+      background: white; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .welfare-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+    .welfare-title { font-size: 0.9rem; font-weight: 700; color: var(--text-900); }
+    .welfare-icon { width: 28px; height: 28px; background: var(--orange-100); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+    .welfare-icon svg { width: 15px; height: 15px; color: var(--orange-600); }
+    .welfare-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+    .welfare-item:last-child { border-bottom: none; }
+    .welfare-item svg { width: 15px; height: 15px; color: var(--green-600); flex-shrink: 0; }
+    .welfare-item-text { font-size: 0.82rem; color: var(--text-700); flex: 1; }
+    .proto-badge { font-size: 0.65rem; font-weight: 700; background: var(--orange-50); color: var(--orange-600); border: 1px solid var(--orange-100); padding: 0.1rem 0.4rem; border-radius: 4px; }
+
+    /* ===== FEDERATION DASHBOARD ===== */
+    .fed-dash { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1.25rem; }
+    .fed-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .fed-header h1 { font-size: 1.4rem; font-weight: 800; color: var(--text-900); }
+    .fed-header p { font-size: 0.85rem; color: var(--text-500); }
+    .fed-select { padding: 0.45rem 0.85rem; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; color: var(--text-700); background: white; }
+    
+    .fed-overview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .fed-stat {
+      background: white; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      display: flex; align-items: center; gap: 0.9rem;
+    }
+    .fed-stat-icon {
+      width: 44px; height: 44px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .fed-stat-icon svg { width: 22px; height: 22px; }
+    .fed-stat-val { font-size: 1.5rem; font-weight: 800; color: var(--text-900); }
+    .fed-stat-label { font-size: 0.78rem; color: var(--text-500); }
+    .fed-stat-sub { font-size: 0.72rem; color: var(--green-600); font-weight: 500; margin-top: 0.1rem; }
+    
+    .fed-charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
+    .chart-card {
+      background: white; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .chart-title { font-size: 0.9rem; font-weight: 700; color: var(--text-900); margin-bottom: 1rem; }
+    
+    /* Bar chart */
+    .bar-chart { display: flex; align-items: flex-end; gap: 0.5rem; height: 120px; }
+    .bar-group { display: flex; flex-direction: column; align-items: center; flex: 1; gap: 0.3rem; }
+    .bar {
+      width: 100%; border-radius: 4px 4px 0 0;
+      transition: opacity 0.2s;
+      min-height: 4px;
+    }
+    .bar:hover { opacity: 0.8; }
+    .bar-label { font-size: 0.65rem; color: var(--text-500); text-align: center; }
+    .bar-val { font-size: 0.7rem; font-weight: 600; color: var(--text-700); }
+    
+    /* Line chart (simplified) */
+    .line-chart-area { height: 120px; position: relative; }
+    .line-chart-area svg { width: 100%; height: 100%; }
+    .line-x-labels { display: flex; justify-content: space-between; margin-top: 0.4rem; }
+    .line-x-label { font-size: 0.65rem; color: var(--text-300); }
+    
+    /* Donut chart */
+    .donut-wrap { display: flex; align-items: center; gap: 1.5rem; }
+    .donut-svg-area { width: 100px; height: 100px; flex-shrink: 0; }
+    .donut-legend { display: flex; flex-direction: column; gap: 0.4rem; }
+    .legend-item { display: flex; align-items: center; gap: 0.5rem; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .legend-label { font-size: 0.78rem; color: var(--text-700); }
+    .legend-val { font-size: 0.78rem; font-weight: 700; color: var(--text-900); margin-left: auto; }
+    
+    /* Workers table */
+    .workers-table-wrap { overflow-x: auto; }
+    .workers-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    .workers-table th {
+      text-align: left; padding: 0.65rem 0.85rem;
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--text-500); background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+    .workers-table td {
+      padding: 0.75rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-900);
+    }
+    .workers-table tr:last-child td { border-bottom: none; }
+    .workers-table tr:hover td { background: var(--green-50); }
+    .status-dot { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.78rem; font-weight: 600; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; }
+    .dot-green { background: #22c55e; }
+    .dot-orange { background: var(--orange-500); }
+    .dot-gray { background: var(--text-300); }
+    
+    /* Demand areas */
+    .demand-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.75rem; }
+    .demand-item {
+      background: white; border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 0.9rem 1rem;
+    }
+    .demand-area { font-size: 0.85rem; font-weight: 600; color: var(--text-900); }
+    .demand-service { font-size: 0.78rem; color: var(--text-500); margin-top: 0.15rem; }
+    .demand-level {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      margin-top: 0.5rem; font-size: 0.72rem; font-weight: 700;
+      padding: 0.2rem 0.5rem; border-radius: 4px;
+    }
+    .demand-high { background: #fee2e2; color: #991b1b; }
+    .demand-med { background: #fef9c3; color: #854d0e; }
+    .demand-low { background: var(--green-100); color: var(--green-700); }
+
+    /* ===== INVOICE MODAL ===== */
+    .invoice-body { padding: 1.5rem; }
+    .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+    .invoice-logo { font-size: 1.1rem; font-weight: 800; color: var(--green-700); }
+    .invoice-logo small { display: block; font-size: 0.7rem; font-weight: 400; color: var(--text-500); }
+    .invoice-num { text-align: right; }
+    .invoice-num .num { font-size: 0.85rem; font-weight: 700; color: var(--text-900); }
+    .invoice-num .date { font-size: 0.75rem; color: var(--text-500); }
+    .invoice-parties {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+      background: var(--bg); border-radius: var(--radius-sm); padding: 0.9rem;
+      margin-bottom: 1.25rem;
+    }
+    .party-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: var(--text-300); margin-bottom: 0.3rem; }
+    .party-name { font-size: 0.88rem; font-weight: 700; color: var(--text-900); }
+    .party-detail { font-size: 0.78rem; color: var(--text-500); }
+    .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+    .invoice-table th { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-500); text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border); }
+    .invoice-table td { font-size: 0.82rem; padding: 0.6rem; border-bottom: 1px solid var(--border); color: var(--text-900); }
+    .invoice-table td:last-child { text-align: right; font-weight: 600; }
+    .invoice-total { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0.6rem; border-top: 2px solid var(--text-900); }
+    .total-label { font-weight: 700; color: var(--text-900); }
+    .total-amount { font-size: 1.1rem; font-weight: 800; color: var(--green-700); }
+    .invoice-footer { text-align: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .invoice-footer p { font-size: 0.75rem; color: var(--text-300); }
+    .btn-print {
+      display: flex; align-items: center; gap: 0.5rem;
+      margin: 0.75rem auto 0;
+      padding: 0.6rem 1.25rem;
+      background: var(--green-700); color: white;
+      border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600;
+    }
+    .btn-print:hover { background: var(--green-800); }
+
+    /* SOS Modal */
+    .sos-modal-inner { padding: 2rem 1.5rem; text-align: center; }
+    .sos-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .sos-title { font-size: 1.2rem; font-weight: 800; color: #dc2626; margin-bottom: 0.5rem; }
+    .sos-desc { font-size: 0.9rem; color: var(--text-700); margin-bottom: 1.5rem; }
+    .sos-activated { display: none; }
+    .sos-activated.show { display: block; }
+    .sos-activated-banner {
+      background: #fef2f2; border: 1px solid #fecaca;
+      border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1rem;
+    }
+    .sos-activated-title { font-size: 0.95rem; font-weight: 700; color: #dc2626; }
+    .sos-activated-desc { font-size: 0.82rem; color: var(--text-700); margin-top: 0.3rem; }
+    .btn-sos-confirm {
+      width: 100%; padding: 0.85rem;
+      background: #dc2626; color: white;
+      border-radius: var(--radius-md); font-size: 0.95rem; font-weight: 700;
+      transition: background 0.15s;
+    }
+    .btn-sos-confirm:hover { background: #b91c1c; }
+    .btn-sos-cancel {
+      width: 100%; padding: 0.75rem;
+      background: white; color: var(--text-500);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md); font-size: 0.9rem;
+      margin-top: 0.75rem;
+    }
+    .btn-sos-cancel:hover { background: var(--bg); }
+
+    /* Notification toast */
+    .toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999;
+      background: var(--text-900); color: white;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-size: 0.875rem; font-weight: 500;
+      display: flex; align-items: center; gap: 0.5rem;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(100px); opacity: 0;
+      transition: all 0.3s ease;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast svg { width: 16px; height: 16px; color: #4ade80; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      .value-grid { grid-template-columns: 1fr; }
+      .stats-inner { grid-template-columns: repeat(2,1fr); }
+      .profile-layout { grid-template-columns: 1fr; }
+      .profile-sidebar { position: static; }
+      .tracking-layout { grid-template-columns: 1fr; }
+      .dash-stats { grid-template-columns: repeat(2,1fr); }
+      .dash-grid { grid-template-columns: 1fr; }
+      .fed-overview-grid { grid-template-columns: repeat(2,1fr); }
+      .fed-charts-grid { grid-template-columns: 1fr; }
+      .demand-grid { grid-template-columns: repeat(2,1fr); }
+      .slots-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .hero { padding: 2rem 1rem; }
+      .stats-inner { grid-template-columns: repeat(2,1fr); }
+      .service-grid { grid-template-columns: repeat(3,1fr); }
+      .worker-grid { grid-template-columns: 1fr; }
+      .dash-stats { grid-template-columns: repeat(2,1fr); }
+      .fed-overview-grid { grid-template-columns: 1fr; }
+      .search-bar { flex-direction: column; }
+      .search-divider { display: none; }
+      .form-row-2 { grid-template-columns: 1fr; }
+      .confirmed-btns { flex-direction: column; }
+      .payment-methods { gap: 0.4rem; }
+      .demand-grid { grid-template-columns: 1fr; }
+      .role-switcher { flex-wrap: wrap; }
+      .demo-label { display: none; }
+    }
+
+    /* Page fade transition */
+    .screen { animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+    
+    /* Back button */
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.85rem; font-weight: 600; color: var(--text-500);
+      background: none; cursor: pointer; padding: 0.4rem 0;
+      margin-bottom: 1rem; transition: color 0.15s;
+    }
+    .back-btn:hover { color: var(--green-700); }
+    .back-btn svg { width: 16px; height: 16px; }
+    
+    /* Section divider */
+    .divider { height: 1px; background: var(--border); margin: 0; }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-300); }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav id="navbar" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="#" class="logo" onclick="showScreen('home'); return false;" id="logo-link">
+      <div class="logo-mark">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <span class="logo-text">GIG-<span>SAATHI</span></span>
+    </a>
+    
+    <div class="nav-spacer"></div>
+    
+    <div class="nav-links" id="nav-links">
+      <span class="demo-label" id="demo-label">DEMO MODE</span>
+      <div class="role-switcher" id="role-switcher" aria-label="Switch demo role">
+        <button class="role-btn active" id="role-customer" onclick="switchRole('customer')" data-hi="ग्राहक">Customer</button>
+        <button class="role-btn" id="role-worker" onclick="switchRole('worker')" data-hi="कामगार">Worker</button>
+        <button class="role-btn" id="role-federation" onclick="switchRole('federation')" data-hi="संघ">Federation</button>
+      </div>
+      <button class="lang-btn active" id="lang-en" onclick="setLang('en')" aria-label="Switch to English">EN</button>
+      <button class="lang-btn" id="lang-hi" onclick="setLang('hi')" aria-label="Switch to Hindi">हि</button>
+    </div>
+    
+    <button class="hamburger" id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Toggle menu">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="role-switcher" style="margin-bottom:0.5rem;">
+      <button class="role-btn active" onclick="switchRole('customer');toggleMobileMenu()">Customer</button>
+      <button class="role-btn" onclick="switchRole('worker');toggleMobileMenu()">Worker</button>
+      <button class="role-btn" onclick="switchRole('federation');toggleMobileMenu()">Federation</button>
+    </div>
+    <div style="display:flex;gap:0.5rem;">
+      <button class="lang-btn active" id="lang-en-mob" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" id="lang-hi-mob" onclick="setLang('hi')">हि</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== SCREEN 1: HOME ===== -->
+<!-- TODO: Replace with dynamic React Component → src/components/HomePage.jsx -->
+<!-- TODO: Hero stats (1,240 workers, ₹42L wages) → fetch from GET /api/federation/overview -->
+<section id="screen-home" class="screen active" aria-label="Home">
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>SIH 2026 · Problem SIH26089</span>
+      </div>
+      <h1 class="hero-title"><span class="brand">GIG-SAATHI</span><br/>Cooperative Gig<br/>Services Platform</h1>
+      <p class="hero-tagline" data-key="tagline">"Fair work. Trusted services. Stronger cooperatives."</p>
+      <p class="hero-desc">Connect households and institutions directly with verified cooperative workers — eliminating middlemen, ensuring fair wages, and building stronger communities.</p>
+      <div class="hero-cta">
+        <button class="btn-primary" id="hero-find-btn" onclick="showScreen('find-service')" data-key="find-service">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span data-key="find-service">Find a Service</span>
+        </button>
+        <button class="btn-secondary" onclick="switchRole('worker')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+          <span data-key="join-worker">Join as Worker</span>
+        </button>
+        <button class="btn-text" onclick="switchRole('federation')">Federation Dashboard →</button>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="hero-visual-header">
+        <div>
+          <div class="title">Nearby Workers</div>
+          <div class="subtitle">Vasant Kunj, New Delhi</div>
+        </div>
+        <div class="live-badge"><div class="live-dot"></div>Live</div>
+      </div>
+      <div class="mini-worker-list">
+        <div class="mini-worker">
+          <div class="mini-avatar" style="background:#2d7a51;">RK</div>
+          <div class="mini-worker-info">
+            <div class="mini-worker-name">Ramesh Kumar</div>
+            <div class="mini-worker-skill">Electrician · 2.4 km</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="mini-rating">★ 4.8</div>
+            <div class="mini-price">₹350</div>
+          </div>
+          <div class="mini-badge"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Verified</div>
+        </div>
+        <div class="mini-worker">
+          <div class="mini-avatar" style="background:#c45e1a;">SP</div>
+          <div class="mini-worker-info">
+            <div class="mini-worker-name">Sunita Patel</div>
+            <div class="mini-worker-skill">Cleaning · 1.1 km</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="mini-rating">★ 4.9</div>
+            <div class="mini-price">₹280</div>
+          </div>
+          <div class="mini-badge"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Verified</div>
+        </div>
+        <div class="mini-worker">
+          <div class="mini-avatar" style="background:#7c4dbb;">MR</div>
+          <div class="mini-worker-info">
+            <div class="mini-worker-name">Mohammad Rafiq</div>
+            <div class="mini-worker-skill">Plumber · 3.2 km</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="mini-rating">★ 4.7</div>
+            <div class="mini-price">₹400</div>
+          </div>
+          <div class="mini-badge"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Verified</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-bar" role="region" aria-label="Platform statistics">
+    <div class="stats-inner">
+      <div>
+        <div class="stat-num">1,240+</div>
+        <div class="stat-label">Registered Workers</div>
+      </div>
+      <div>
+        <div class="stat-num">18</div>
+        <div class="stat-label">Cooperatives</div>
+      </div>
+      <div>
+        <div class="stat-num">6,800+</div>
+        <div class="stat-label">Services Delivered</div>
+      </div>
+      <div>
+        <div class="stat-num">₹42L+</div>
+        <div class="stat-label">Wages Disbursed</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <p class="section-title" data-key="services-title">Our Services</p>
+    <p class="section-subtitle">Browse verified workers across all service categories</p>
+    <div class="service-grid" role="list" aria-label="Service categories">
+      <div class="service-cat-card" role="listitem" onclick="selectServiceCategory('Electrician')" tabindex="0" aria-label="Electrician services">
+        <div class="service-cat-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <div class="service-cat-name">Electrician</div>
+      </div>
+      <div class="service-cat-card" role="listitem" onclick="selectServiceCategory('Plumber')" tabindex="0">
+        <div class="service-cat-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.5 15.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M8 15.5A7.5 7.5 0 0 1 15.5 8"/><path d="M3 3h6v6H3z"/><path d="M15 3h6v6h-6z"/></svg></div>
+        <div class="service-cat-name">Plumber</div>
+      </div>
+      <div class="service-cat-card" role="listitem" onclick="selectServiceCategory('Cleaning')" tabindex="0">
+        <div class="service-cat-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22h12"/><path d="M8 22V6h8v4"/><path d="M16 10c1 .5 2 1.5 2 3 0 2-2 3-2 5v.5"/><path d="M8 6l5-4"/></svg></div>
+        <div class="service-cat-name">Cleaning</div>
+      </div>
+      <div class="service-cat-card" role="listitem" onclick="selectServiceCategory('Carpentry')" tabindex="0">
+        <div class="service-cat-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20V8l7-6 7 6v12"/><path d="M9 20v-5h6v5"/></svg></div>
+        <div class="service-cat-name">Carpentry</div>
+      </div>
+      <div class="service-cat-card" role="listitem" onclick="selectServiceCategory('Appliance Repair')" tabindex="0">
+        <div class="service-cat-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <div class="service-cat-name">Appliance Repair</div>
+      </div>
+      <div class="service-cat-card" role="listitem" onclick="selectServiceCategory('Caregiving')" tabindex="0">
+        <div class="service-cat-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <div class="service-cat-name">Caregiving</div>
+      </div>
+      <div class="service-cat-card" role="listitem" onclick="selectServiceCategory('Emergency')" tabindex="0">
+        <div class="service-cat-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div class="service-cat-name">Emergency</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section">
+    <p class="section-title">Why GIG-SAATHI?</p>
+    <p class="section-subtitle">Built around the principles of cooperative work and worker dignity</p>
+    <div class="value-grid">
+      <div class="value-card">
+        <div class="value-icon" style="background:#dcfce7;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <h3 class="value-title">Fair Wages</h3>
+        <p class="value-desc">Direct connection between households and workers reduces dependence on middlemen, ensuring workers receive fair compensation for their skills.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon" style="background:#e0f2fe;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3 class="value-title">Verified Workers</h3>
+        <p class="value-desc">Cooperative-linked workers with transparent skill verification, visible ratings, and work history — giving customers confidence before every booking.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon" style="background:#fef9c3;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#854d0e" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <h3 class="value-title">Worker Welfare</h3>
+        <p class="value-desc">A platform designed around worker welfare — with social security linkage, insurance access, and cooperative support structures built-in.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SCREEN 2: FIND SERVICE ===== -->
+<!-- TODO: Replace with dynamic React Component → src/components/FindServicePage.jsx -->
+<!-- INTEGRATION POINT: Search query → GET /api/workers?skill={category}&lat={lat}&lng={lng}&radius=10km -->
+<!-- INTEGRATION POINT: Worker availability status → Redis cache (real-time via WebSocket) -->
+<section id="screen-find-service" class="screen" aria-label="Find a Service">
+  <div class="find-header">
+    <div class="find-header-inner">
+      <h1 class="find-title" data-key="find-title">Find a Service</h1>
+      <p class="find-subtitle">Search verified cooperative workers near you</p>
+      <div class="search-bar" role="search">
+        <div class="search-input-wrap">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="search-input" id="search-input" placeholder="Electrician, plumber, cleaner..." aria-label="Search services" />
+        </div>
+        <div class="search-divider"></div>
+        <div class="location-select" role="combobox" aria-label="Select location">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Vasant Kunj, Delhi
+        </div>
+        <button class="search-btn" onclick="filterWorkers()" aria-label="Search">Search</button>
+      </div>
+      <div class="cat-pills" role="group" aria-label="Filter by category">
+        <button class="cat-pill active" id="pill-all" onclick="filterByPill('All', this)">All Services</button>
+        <button class="cat-pill" onclick="filterByPill('Electrician', this)">⚡ Electrician</button>
+        <button class="cat-pill" onclick="filterByPill('Plumber', this)">🔧 Plumber</button>
+        <button class="cat-pill" onclick="filterByPill('Cleaning', this)">🧹 Cleaning</button>
+        <button class="cat-pill" onclick="filterByPill('Carpentry', this)">🪚 Carpentry</button>
+        <button class="cat-pill" onclick="filterByPill('Appliance Repair', this)">🔌 Repair</button>
+        <button class="cat-pill" onclick="filterByPill('Caregiving', this)">❤️ Caregiving</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="worker-list-area">
+    <div class="filter-bar">
+      <span class="filter-label">Sort by:</span>
+      <button class="filter-chip active" onclick="this.closest('.filter-bar').querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active')">Rating</button>
+      <button class="filter-chip" onclick="this.closest('.filter-bar').querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active')">Distance</button>
+      <button class="filter-chip" onclick="this.closest('.filter-bar').querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active')">Price</button>
+      <button class="filter-chip" onclick="this.closest('.filter-bar').querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active')">Availability</button>
+      <span class="results-count" id="results-count">12 workers found</span>
+    </div>
+    <div class="worker-grid" id="worker-grid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ===== SCREEN 3: WORKER PROFILE ===== -->
+<!-- TODO: Replace with dynamic React Component → src/components/WorkerProfilePage.jsx -->
+<!-- INTEGRATION POINT: Fetch worker data from GET /api/workers/{id} via React Query -->
+<!-- INTEGRATION POINT: Fetch verification status from e-Shram API here -->
+<!--   Backend proxy: GET /api/eshram/verify/{uin} → calls https://eshram.gov.in/api/... -->
+<!-- INTEGRATION POINT: Fetch live available slots from GET /api/workers/{id}/slots?date={date} -->
+<section id="screen-worker-profile" class="screen" aria-label="Worker Profile">
+  <div style="max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 0;">
+    <button class="back-btn" onclick="showScreen('find-service')">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to results
+    </button>
+  </div>
+  <div class="profile-layout" id="profile-layout">
+    <!-- Populated by JS -->
+  </div>
+</section>
+
+<!-- ===== SCREEN 5: TRACKING ===== -->
+<section id="screen-tracking" class="screen" aria-label="Track Worker">
+  <div class="tracking-layout">
+    <div>
+      <button class="back-btn" onclick="showScreen('home')" style="background:white;padding:0.4rem 0.75rem;border-radius:6px;border:1px solid var(--border);margin-bottom:1rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        Home
+      </button>
+      <div class="map-container">
+        <div class="map-svg-area" aria-label="Simulated map view">
+          <svg viewBox="0 0 600 400" style="width:100%;height:100%;">
+            <!-- Road grid background -->
+            <rect width="600" height="400" fill="#e8f0f8"/>
+            <!-- Roads -->
+            <line x1="0" y1="200" x2="600" y2="200" stroke="#fff" stroke-width="20"/>
+            <line x1="0" y1="140" x2="600" y2="140" stroke="#fff" stroke-width="10"/>
+            <line x1="0" y1="280" x2="600" y2="280" stroke="#fff" stroke-width="10"/>
+            <line x1="150" y1="0" x2="150" y2="400" stroke="#fff" stroke-width="20"/>
+            <line x1="300" y1="0" x2="300" y2="400" stroke="#fff" stroke-width="12"/>
+            <line x1="450" y1="0" x2="450" y2="400" stroke="#fff" stroke-width="10"/>
+            <!-- Blocks -->
+            <rect x="10" y="10" width="120" height="115" rx="4" fill="#dde6f0" opacity="0.6"/>
+            <rect x="10" y="155" width="120" height="30" rx="4" fill="#d4dde9" opacity="0.5"/>
+            <rect x="10" y="210" width="120" height="55" rx="4" fill="#dde6f0" opacity="0.6"/>
+            <rect x="10" y="295" width="120" height="95" rx="4" fill="#d4dde9" opacity="0.5"/>
+            <rect x="170" y="10" width="110" height="115" rx="4" fill="#d4dde9" opacity="0.5"/>
+            <rect x="170" y="155" width="110" height="105" rx="4" fill="#dde6f0" opacity="0.6"/>
+            <rect x="170" y="295" width="110" height="95" rx="4" fill="#d4dde9" opacity="0.5"/>
+            <rect x="320" y="10" width="110" height="115" rx="4" fill="#dde6f0" opacity="0.6"/>
+            <rect x="320" y="155" width="110" height="105" rx="4" fill="#d4dde9" opacity="0.5"/>
+            <rect x="320" y="295" width="110" height="95" rx="4" fill="#dde6f0" opacity="0.6"/>
+            <rect x="470" y="10" width="120" height="115" rx="4" fill="#d4dde9" opacity="0.5"/>
+            <rect x="470" y="155" width="120" height="105" rx="4" fill="#dde6f0" opacity="0.6"/>
+            <rect x="470" y="295" width="120" height="95" rx="4" fill="#d4dde9" opacity="0.5"/>
+            <!-- Route line -->
+            <polyline points="420,80 420,200 300,200 300,310" stroke="#2d7a51" stroke-width="4" stroke-dasharray="8,4" fill="none" stroke-linecap="round"/>
+            <!-- Customer marker -->
+            <circle cx="300" cy="310" r="16" fill="#2d7a51" opacity="0.15"/>
+            <circle cx="300" cy="310" r="10" fill="#2d7a51"/>
+            <text x="300" y="314" text-anchor="middle" fill="white" font-size="10" font-weight="bold">You</text>
+            <!-- Worker marker (animated) -->
+            <circle cx="420" cy="80" r="18" fill="#c45e1a" opacity="0.15"/>
+            <circle cx="420" cy="80" r="12" fill="#c45e1a"/>
+            <text x="420" y="84" text-anchor="middle" fill="white" font-size="9" font-weight="bold">RK</text>
+            <!-- Labels -->
+            <rect x="200" y="290" width="80" height="22" rx="4" fill="white" opacity="0.9"/>
+            <text x="240" y="305" text-anchor="middle" fill="#2d7a51" font-size="10" font-weight="bold">Your Location</text>
+            <rect x="380" y="58" width="90" height="22" rx="4" fill="white" opacity="0.9"/>
+            <text x="425" y="73" text-anchor="middle" fill="#c45e1a" font-size="10" font-weight="bold">Ramesh Kumar</text>
+            <!-- Compass -->
+            <circle cx="560" cy="40" r="18" fill="white" opacity="0.8"/>
+            <text x="560" y="36" text-anchor="middle" fill="#666" font-size="10" font-weight="bold">N</text>
+            <line x1="560" y1="28" x2="560" y2="24" stroke="#dc2626" stroke-width="2"/>
+            <line x1="560" y1="52" x2="560" y2="56" stroke="#666" stroke-width="1.5"/>
+          </svg>
+          <button class="sos-float" onclick="openSOS()" aria-label="SOS Emergency Button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            SOS
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="tracking-panel">
+      <div class="tracking-card">
+        <div class="eta-display">
+          <div class="eta-num" id="eta-num">18</div>
+          <div class="eta-label">minutes away</div>
+          <div class="eta-worker">Ramesh is on the way</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:var(--text-500);margin-bottom:0.5rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          2.4 km · Vasant Kunj, New Delhi
+        </div>
+      </div>
+      
+      <div class="tracking-card">
+        <div class="card-title">Job Status</div>
+        <div class="status-steps">
+          <div class="status-step">
+            <div class="step-dot done"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-text done">Booking confirmed</span>
+          </div>
+          <div class="step-line done"></div>
+          <div class="status-step">
+            <div class="step-dot done"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-text done">Worker accepted</span>
+          </div>
+          <div class="step-line done"></div>
+          <div class="status-step">
+            <div class="step-dot done"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-text done">Worker travelling</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="status-step">
+            <div class="step-dot active"></div>
+            <span class="step-text active">Arriving soon</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="status-step">
+            <div class="step-dot pending"></div>
+            <span class="step-text pending">Job in progress</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="status-step">
+            <div class="step-dot pending"></div>
+            <span class="step-text pending">Completed</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="tracking-card">
+        <div class="card-title">Booking Details</div>
+        <div style="display:flex;flex-direction:column;gap:0.4rem;font-size:0.82rem;">
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-500)">Booking ID</span><span style="font-weight:600">GS-2026-1042</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-500)">Service</span><span style="font-weight:600">Electrical Repair</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-500)">Worker</span><span style="font-weight:600">Ramesh Kumar</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-500)">Time</span><span style="font-weight:600">10:30 AM</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-500)">Amount</span><span style="font-weight:600;color:var(--green-700)">₹350</span></div>
+        </div>
+      </div>
+      
+      <div style="display:flex;gap:0.75rem;">
+        <button class="btn-secondary" style="flex:1;justify-content:center;font-size:0.85rem;padding:0.6rem;" onclick="">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.41 2 2 0 0 1 3.62 1.24h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l.92-1.87a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.73 15"/></svg>
+          Call Worker
+        </button>
+        <button class="btn-primary" style="flex:1;justify-content:center;font-size:0.85rem;padding:0.6rem;" onclick="showScreen('home')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SCREEN: WORKER DASHBOARD ===== -->
+<!-- TODO: Replace with dynamic React Component → src/components/WorkerDashboard.jsx -->
+<!-- INTEGRATION POINT: Fetch today's jobs from GET /api/workers/{id}/jobs?date=today (authenticated route) -->
+<!-- INTEGRATION POINT: Fetch earnings summary from GET /api/workers/{id}/earnings?period=week -->
+<!-- INTEGRATION POINT: Accept/Reject job → PATCH /api/bookings/{id}/status -->
+<!-- INTEGRATION POINT: Job status updates → push notification via Firebase FCM + MSG91 SMS -->
+<!-- INTEGRATION POINT: Welfare eligibility → GET /api/welfare/eligibility/{workerUIN} via UMANG API -->
+<section id="screen-worker-dashboard" class="screen" aria-label="Worker Dashboard">
+  <div class="worker-dash">
+    <div class="dash-greeting">
+      <h1>Good morning, Ramesh 👋</h1>
+      <p>Saturday, 12 September 2026 · Vasant Kunj, New Delhi</p>
+    </div>
+    
+    <div class="dash-stats">
+      <div class="dash-stat-card">
+        <div class="dash-stat-icon" style="background:#dcfce7;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div class="dash-stat-val" id="worker-earnings">₹1,850</div>
+        <div class="dash-stat-label">Today's Earnings</div>
+        <div class="dash-stat-trend" id="worker-earnings-trend">↑ ₹350 last job</div>
+      </div>
+      <div class="dash-stat-card">
+        <div class="dash-stat-icon" style="background:#fef9c3;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#854d0e" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <div class="dash-stat-val" id="pending-count">3</div>
+        <div class="dash-stat-label">Pending Requests</div>
+      </div>
+      <div class="dash-stat-card">
+        <div class="dash-stat-icon" style="background:#e0f2fe;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <div class="dash-stat-val">127</div>
+        <div class="dash-stat-label">Completed Jobs</div>
+      </div>
+      <div class="dash-stat-card">
+        <div class="dash-stat-icon" style="background:#fdf0e6;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c45e1a" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="dash-stat-val">4.8 ★</div>
+        <div class="dash-stat-label">Rating</div>
+      </div>
+    </div>
+    
+    <div class="dash-grid">
+      <div>
+        <h2 style="font-size:1rem;font-weight:700;color:var(--text-900);margin-bottom:1rem;">Incoming Job Requests</h2>
+        <div class="job-requests" id="job-requests">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+      
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <!-- Earnings chart simplified -->
+        <div class="welfare-card">
+          <div class="card-title">This Week</div>
+          <div class="bar-chart" style="height:80px;align-items:flex-end;">
+            <div class="bar-group"><div class="bar" style="height:45px;background:var(--green-400);"></div><div class="bar-label">Mon</div></div>
+            <div class="bar-group"><div class="bar" style="height:62px;background:var(--green-500);"></div><div class="bar-label">Tue</div></div>
+            <div class="bar-group"><div class="bar" style="height:38px;background:var(--green-400);"></div><div class="bar-label">Wed</div></div>
+            <div class="bar-group"><div class="bar" style="height:75px;background:var(--green-600);"></div><div class="bar-label">Thu</div></div>
+            <div class="bar-group"><div class="bar" style="height:50px;background:var(--green-400);"></div><div class="bar-label">Fri</div></div>
+            <div class="bar-group"><div class="bar" style="height:80px;background:var(--green-700);"></div><div class="bar-label">Sat</div></div>
+            <div class="bar-group"><div class="bar" style="height:20px;background:var(--border);"></div><div class="bar-label">Sun</div></div>
+          </div>
+          <div style="font-size:0.78rem;color:var(--text-500);margin-top:0.4rem;">Weekly earnings: <strong style="color:var(--green-700)">₹9,450</strong></div>
+        </div>
+        
+        <!-- Worker Welfare -->
+        <div class="welfare-card">
+          <div class="welfare-header">
+            <div class="welfare-icon"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+            <div class="welfare-title">Worker Welfare</div>
+          </div>
+          <div class="welfare-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="welfare-item-text">PM-SYM Pension Linked</span>
+            <span class="proto-badge">Prototype Integration</span>
+          </div>
+          <div class="welfare-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="welfare-item-text">ESIC Health Insurance</span>
+            <span class="proto-badge">Prototype Integration</span>
+          </div>
+          <div class="welfare-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="welfare-item-text">Cooperative Accident Cover</span>
+          </div>
+          <div class="welfare-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="welfare-item-text">e-Shram Card Registered</span>
+            <span class="proto-badge">Prototype Integration</span>
+          </div>
+          <button class="btn-secondary" style="width:100%;justify-content:center;margin-top:0.75rem;font-size:0.82rem;padding:0.5rem;">View Benefits</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SCREEN: FEDERATION DASHBOARD ===== -->
+<!-- TODO: Replace with dynamic React Component → src/components/FederationDashboard.jsx -->
+<!-- INTEGRATION POINT: Overview stats → GET /api/federation/overview (role: federation_admin) -->
+<!-- INTEGRATION POINT: Service demand chart → GET /api/federation/analytics/demand?period=month -->
+<!-- INTEGRATION POINT: Worker allocation donut → GET /api/federation/analytics/allocation -->
+<!-- INTEGRATION POINT: High demand areas → GET /api/federation/analytics/demand-map -->
+<!-- INTEGRATION POINT: Worker directory table → GET /api/federation/workers?page=1&limit=20 -->
+<section id="screen-federation" class="screen" aria-label="Federation Dashboard">
+  <div class="fed-dash">
+    <div class="fed-header">
+      <div>
+        <h1>Federation Dashboard</h1>
+        <p>Delhi NCR Cooperative Federation · September 2026</p>
+      </div>
+      <div style="display:flex;gap:0.75rem;align-items:center;">
+        <select class="fed-select" aria-label="Select cooperative">
+          <option>All Cooperatives</option>
+          <option>Vasant Kunj Workers Co-op</option>
+          <option>South Delhi Service Guild</option>
+          <option>Dwarka Cooperative Society</option>
+        </select>
+        <button class="btn-primary" style="font-size:0.82rem;padding:0.5rem 1rem;">Export Report</button>
+      </div>
+    </div>
+    
+    <!-- Overview stats -->
+    <div class="fed-overview-grid">
+      <div class="fed-stat">
+        <div class="fed-stat-icon" style="background:#dcfce7;"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div>
+          <div class="fed-stat-val">1,240</div>
+          <div class="fed-stat-label">Total Workers</div>
+          <div class="fed-stat-sub">1,088 Verified (87.7%)</div>
+        </div>
+      </div>
+      <div class="fed-stat">
+        <div class="fed-stat-icon" style="background:#fef9c3;"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#854d0e" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <div>
+          <div class="fed-stat-val">6,842</div>
+          <div class="fed-stat-label">Total Services</div>
+          <div class="fed-stat-sub">↑ 12% this month</div>
+        </div>
+      </div>
+      <div class="fed-stat">
+        <div class="fed-stat-icon" style="background:#e0f2fe;"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div>
+          <div class="fed-stat-val">₹42.3L</div>
+          <div class="fed-stat-label">Wages Disbursed</div>
+          <div class="fed-stat-sub">Direct to workers</div>
+        </div>
+      </div>
+      <div class="fed-stat">
+        <div class="fed-stat-icon" style="background:#fdf0e6;"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c45e1a" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <div>
+          <div class="fed-stat-val">876</div>
+          <div class="fed-stat-label">Welfare Coverage</div>
+          <div class="fed-stat-sub">70.6% of workers</div>
+        </div>
+      </div>
+      <div class="fed-stat">
+        <div class="fed-stat-icon" style="background:#f3e8ff;"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+        <div>
+          <div class="fed-stat-val">18</div>
+          <div class="fed-stat-label">Cooperatives</div>
+          <div class="fed-stat-sub">Across Delhi NCR</div>
+        </div>
+      </div>
+      <div class="fed-stat">
+        <div class="fed-stat-icon" style="background:#dcfce7;"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div>
+          <div class="fed-stat-val">47</div>
+          <div class="fed-stat-label">Active Jobs Now</div>
+          <div class="fed-stat-sub">Live bookings</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Charts -->
+    <div class="fed-charts-grid">
+      <!-- Service demand bar chart -->
+      <div class="chart-card">
+        <div class="chart-title">Service Demand (This Month)</div>
+        <div class="bar-chart">
+          <div class="bar-group">
+            <div class="bar-val">312</div>
+            <div class="bar" style="height:95px;background:var(--green-600);"></div>
+            <div class="bar-label">Electr.</div>
+          </div>
+          <div class="bar-group">
+            <div class="bar-val">248</div>
+            <div class="bar" style="height:76px;background:var(--green-500);"></div>
+            <div class="bar-label">Plumb.</div>
+          </div>
+          <div class="bar-group">
+            <div class="bar-val">394</div>
+            <div class="bar" style="height:120px;background:var(--green-700);"></div>
+            <div class="bar-label">Clean.</div>
+          </div>
+          <div class="bar-group">
+            <div class="bar-val">186</div>
+            <div class="bar" style="height:57px;background:var(--green-400);"></div>
+            <div class="bar-label">Carp.</div>
+          </div>
+          <div class="bar-group">
+            <div class="bar-val">221</div>
+            <div class="bar" style="height:68px;background:var(--green-500);"></div>
+            <div class="bar-label">Repair</div>
+          </div>
+          <div class="bar-group">
+            <div class="bar-val">145</div>
+            <div class="bar" style="height:44px;background:var(--green-400);"></div>
+            <div class="bar-label">Care</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Weekly bookings line chart -->
+      <div class="chart-card">
+        <div class="chart-title">Weekly Bookings (Sep 2026)</div>
+        <div class="line-chart-area">
+          <svg viewBox="0 0 300 120" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#3a9463" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#3a9463" stop-opacity="0.02"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,90 L50,75 L100,60 L150,45 L200,55 L250,35 L300,20" fill="url(#lineGrad)" stroke="none"/>
+            <path d="M0,90 L50,75 L100,60 L150,45 L200,55 L250,35 L300,20" fill="none" stroke="#2d7a51" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="0" cy="90" r="3.5" fill="#2d7a51"/>
+            <circle cx="50" cy="75" r="3.5" fill="#2d7a51"/>
+            <circle cx="100" cy="60" r="3.5" fill="#2d7a51"/>
+            <circle cx="150" cy="45" r="3.5" fill="#2d7a51"/>
+            <circle cx="200" cy="55" r="3.5" fill="#2d7a51"/>
+            <circle cx="250" cy="35" r="3.5" fill="#2d7a51"/>
+            <circle cx="300" cy="20" r="4" fill="#c45e1a"/>
+            <!-- Y grid lines -->
+            <line x1="0" y1="30" x2="300" y2="30" stroke="#e5e0d8" stroke-width="1"/>
+            <line x1="0" y1="60" x2="300" y2="60" stroke="#e5e0d8" stroke-width="1"/>
+            <line x1="0" y1="90" x2="300" y2="90" stroke="#e5e0d8" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="line-x-labels">
+          <span class="line-x-label">W1</span>
+          <span class="line-x-label">W2</span>
+          <span class="line-x-label">W3</span>
+          <span class="line-x-label">W4</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Worker allocation donut + demand areas side by side -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;" id="fed-bottom-grid">
+      <div class="chart-card">
+        <div class="chart-title">Worker Allocation</div>
+        <div class="donut-wrap">
+          <div class="donut-svg-area">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="35" fill="none" stroke="#e5e0d8" stroke-width="16"/>
+              <circle cx="50" cy="50" r="35" fill="none" stroke="#2d7a51" stroke-width="16" stroke-dasharray="132 88" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>
+              <circle cx="50" cy="50" r="35" fill="none" stroke="#c45e1a" stroke-width="16" stroke-dasharray="55 165" stroke-dashoffset="-132" transform="rotate(-90 50 50)"/>
+              <circle cx="50" cy="50" r="35" fill="none" stroke="#aeaeb2" stroke-width="16" stroke-dasharray="33 187" stroke-dashoffset="-187" transform="rotate(-90 50 50)"/>
+              <text x="50" y="47" text-anchor="middle" font-size="14" font-weight="800" fill="#1c1c1e">60%</text>
+              <text x="50" y="59" text-anchor="middle" font-size="8" fill="#6c6c72">Available</text>
+            </svg>
+          </div>
+          <div class="donut-legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#2d7a51;"></div>
+              <span class="legend-label">Available</span>
+              <span class="legend-val">744</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#c45e1a;"></div>
+              <span class="legend-label">Busy</span>
+              <span class="legend-val">310</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#aeaeb2;"></div>
+              <span class="legend-label">Pending</span>
+              <span class="legend-val">186</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="chart-card">
+        <div class="chart-title">High Demand Areas</div>
+        <div class="demand-grid" style="grid-template-columns:1fr;gap:0.5rem;">
+          <div class="demand-item">
+            <div class="demand-area">Vasant Kunj</div>
+            <div class="demand-service">Electrician</div>
+            <div class="demand-level demand-high">🔴 HIGH DEMAND</div>
+          </div>
+          <div class="demand-item">
+            <div class="demand-area">Dwarka Sector 12</div>
+            <div class="demand-service">Plumbing</div>
+            <div class="demand-level demand-high">🔴 HIGH DEMAND</div>
+          </div>
+          <div class="demand-item">
+            <div class="demand-area">Saket</div>
+            <div class="demand-service">Cleaning</div>
+            <div class="demand-level demand-med">🟡 MODERATE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Workers table -->
+    <div class="chart-card">
+      <div class="chart-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Workers Directory</span>
+        <button class="btn-secondary" style="font-size:0.78rem;padding:0.35rem 0.75rem;">View All</button>
+      </div>
+      <div class="workers-table-wrap">
+        <table class="workers-table" role="table" aria-label="Workers directory">
+          <thead>
+            <tr>
+              <th>Worker</th>
+              <th>Skill</th>
+              <th>Cooperative</th>
+              <th>Jobs</th>
+              <th>Rating</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="fed-workers-table">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Booking Modal -->
+<!-- TODO: Replace with React Component → src/components/BookingModal.jsx -->
+<!-- INTEGRATION POINT: On "Confirm Booking" → POST /api/bookings -->
+<!--   Payload: { workerId, customerId, serviceType, scheduledAt, address, price } -->
+<!-- INTEGRATION POINT: Push booking data to PostgreSQL via FastAPI (bookings table) -->
+<!-- INTEGRATION POINT: Trigger SMS to worker via MSG91 (Celery async task) -->
+<div class="modal-overlay" id="booking-modal" role="dialog" aria-modal="true" aria-label="Booking" onclick="if(event.target===this&&!document.getElementById('booking-step-2').classList.contains('hidden'))closeBookingModal()">
+  <div class="modal">
+    <!-- Step 1: Booking form -->
+    <div id="booking-step-1">
+      <div class="modal-header">
+        <h2 class="modal-title">Book Service</h2>
+        <button class="modal-close" onclick="closeBookingModal()" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="booking-summary" id="booking-summary-content">
+          <!-- Filled by JS -->
+        </div>
+        <div class="form-row-2">
+          <div class="form-row">
+            <label class="form-label" for="booking-date">Date</label>
+            <input type="date" class="form-input" id="booking-date" />
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="booking-time">Time</label>
+            <select class="form-input" id="booking-time">
+              <option>09:00 AM</option>
+              <option>10:00 AM</option>
+              <option selected>10:30 AM</option>
+              <option>11:00 AM</option>
+              <option>12:00 PM</option>
+              <option>02:00 PM</option>
+              <option>03:00 PM</option>
+              <option>04:00 PM</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="booking-location">Your Address</label>
+          <input type="text" class="form-input" id="booking-location" placeholder="Enter your full address" value="B-204, Vasant Kunj, New Delhi – 110070" />
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="booking-notes">Notes (optional)</label>
+          <input type="text" class="form-input" id="booking-notes" placeholder="Describe the issue briefly..." />
+        </div>
+        <div class="price-row">
+          <span class="price-label">Service Charge</span>
+          <span class="price-amount" id="booking-price-display">₹350</span>
+        </div>
+        <button class="btn-confirm" onclick="confirmBooking()" id="confirm-btn">Confirm Booking</button>
+      </div>
+    </div>
+    
+    <!-- Step 2: Confirmation -->
+    <div id="booking-step-2" class="hidden">
+      <div class="modal-header">
+        <h2 class="modal-title">Booking Confirmed</h2>
+        <button class="modal-close" onclick="closeBookingModal()" aria-label="Close">&times;</button>
+      </div>
+      <div class="booking-confirmed">
+        <div class="confirmed-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h3 class="confirmed-title">Booking Confirmed ✓</h3>
+        <p class="confirmed-subtitle">Your service has been booked successfully</p>
+        <div class="confirmed-details">
+          <div class="confirmed-id" id="booking-id-display">Booking ID: GS-2026-1042</div>
+          <div class="booking-row"><span class="booking-row-label">Worker</span><span class="booking-row-val" id="conf-worker">Ramesh Kumar</span></div>
+          <div class="booking-row"><span class="booking-row-label">Service</span><span class="booking-row-val" id="conf-service">Electrical Repair</span></div>
+          <div class="booking-row"><span class="booking-row-label">Date</span><span class="booking-row-val" id="conf-date">12 September 2026</span></div>
+          <div class="booking-row"><span class="booking-row-label">Time</span><span class="booking-row-val" id="conf-time">10:30 AM</span></div>
+          <div class="booking-row"><span class="booking-row-label">Location</span><span class="booking-row-val">Vasant Kunj, New Delhi</span></div>
+          <div class="booking-row" style="margin-top:0.4rem;padding-top:0.6rem;border-top:1px solid var(--border);">
+            <span class="booking-row-label">Total Amount</span>
+            <span class="booking-row-val" style="font-size:1rem;color:var(--green-700);" id="conf-amount">₹350</span>
+          </div>
+        </div>
+        <div class="confirmed-btns">
+          <button class="btn-pay" onclick="openPayment()">Pay Now</button>
+          <button class="btn-track" onclick="closeBookingModal();showScreen('tracking')">Track Worker</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Payment Modal -->
+<!-- TODO: Replace with React Component → src/components/PaymentModal.jsx -->
+<!-- INTEGRATION POINT: UPI payment → POST /api/payments/initiate → Razorpay UPI Intent API -->
+<!-- INTEGRATION POINT: Card payment → POST /api/payments/initiate → Razorpay Card API -->
+<!-- INTEGRATION POINT: On payment success callback → POST /api/payments/verify (HMAC signature check) -->
+<!-- INTEGRATION POINT: Record transaction in PostgreSQL (transactions table) -->
+<!-- INTEGRATION POINT: Generate PDF invoice → POST /api/invoices/generate (reportlab backend) -->
+<div class="modal-overlay" id="payment-modal" role="dialog" aria-modal="true" aria-label="Payment">
+  <div class="modal">
+    <!-- Step 1: Payment form -->
+    <div id="payment-step-1">
+      <div class="modal-header">
+        <h2 class="modal-title">Payment</h2>
+        <button class="modal-close" onclick="closePaymentModal()" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="payment-amount-display">
+          <div class="payment-amt" id="payment-amount-display">₹350</div>
+          <div class="payment-desc">Electrical Repair · Ramesh Kumar</div>
+        </div>
+        <div class="payment-methods" role="group" aria-label="Select payment method">
+          <div class="payment-method selected" id="pm-upi" onclick="selectPayment('upi', this)" role="radio" tabindex="0">
+            <div class="payment-method-icon">📱</div>
+            <div class="payment-method-label">UPI</div>
+          </div>
+          <div class="payment-method" id="pm-card" onclick="selectPayment('card', this)" role="radio" tabindex="0">
+            <div class="payment-method-icon">💳</div>
+            <div class="payment-method-label">Card</div>
+          </div>
+          <div class="payment-method" id="pm-cash" onclick="selectPayment('cash', this)" role="radio" tabindex="0">
+            <div class="payment-method-icon">💵</div>
+            <div class="payment-method-label">Cash</div>
+          </div>
+        </div>
+        <div id="upi-field">
+          <div class="form-row">
+            <label class="form-label" for="upi-id">UPI ID</label>
+            <input type="text" class="form-input" id="upi-id" placeholder="yourname@upi" value="priya.sharma@okicici" />
+          </div>
+        </div>
+        <div id="card-field" class="hidden">
+          <div class="form-row">
+            <label class="form-label" for="card-num">Card Number</label>
+            <input type="text" class="form-input" id="card-num" placeholder="•••• •••• •••• ••••" maxlength="19" />
+          </div>
+          <div class="form-row-2">
+            <div class="form-row">
+              <label class="form-label" for="card-exp">Expiry</label>
+              <input type="text" class="form-input" id="card-exp" placeholder="MM/YY" maxlength="5"/>
+            </div>
+            <div class="form-row">
+              <label class="form-label" for="card-cvv">CVV</label>
+              <input type="text" class="form-input" id="card-cvv" placeholder="•••" maxlength="3"/>
+            </div>
+          </div>
+        </div>
+        <div id="cash-field" class="hidden">
+          <div style="background:var(--orange-50);border:1px solid var(--orange-100);border-radius:var(--radius-sm);padding:0.9rem;font-size:0.85rem;color:var(--text-700);margin-bottom:1rem;">
+            💵 Cash payment will be collected by the worker upon service completion.
+          </div>
+        </div>
+        <button class="btn-pay-now" id="pay-now-btn" onclick="processPayment()">
+          Pay <span id="pay-btn-amount">₹350</span>
+        </button>
+        <p style="font-size:0.72rem;color:var(--text-300);text-align:center;margin-top:0.6rem;">🔒 Simulated payment — no real transaction</p>
+      </div>
+    </div>
+    
+    <!-- Step 2: Success -->
+    <div id="payment-step-2" class="hidden">
+      <div class="modal-header">
+        <h2 class="modal-title">Payment Successful</h2>
+        <button class="modal-close" onclick="closePaymentModal()" aria-label="Close">&times;</button>
+      </div>
+      <div class="payment-success">
+        <div class="success-icon-wrap">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h3 style="font-size:1.3rem;font-weight:800;color:var(--text-900);margin-bottom:0.25rem;">Payment Successful ✓</h3>
+        <p style="font-size:0.9rem;color:var(--text-500);margin-bottom:0.5rem;">Transaction completed</p>
+        <div class="tx-details">
+          <div class="tx-row">
+            <span class="tx-label">Transaction ID</span>
+            <span class="tx-val" id="tx-id">TXN2026091200342</span>
+          </div>
+          <div class="tx-row">
+            <span class="tx-label">Amount Paid</span>
+            <span class="tx-val" style="color:var(--green-700);" id="tx-amount">₹350</span>
+          </div>
+          <div class="tx-row">
+            <span class="tx-label">Method</span>
+            <span class="tx-val" id="tx-method">UPI</span>
+          </div>
+          <div class="tx-row">
+            <span class="tx-label">Worker</span>
+            <span class="tx-val" id="tx-worker">Ramesh Kumar</span>
+          </div>
+          <div class="tx-row">
+            <span class="tx-label">Service</span>
+            <span class="tx-val" id="tx-service">Electrical Repair</span>
+          </div>
+          <div class="tx-row">
+            <span class="tx-label">Date</span>
+            <span class="tx-val">12 Sep 2026, 10:08 AM</span>
+          </div>
+        </div>
+        <button class="btn-invoice" onclick="openInvoice()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          View Invoice
+        </button>
+        <div style="display:flex;gap:0.75rem;margin-top:0.75rem;">
+          <button class="btn-secondary" style="flex:1;justify-content:center;font-size:0.85rem;padding:0.6rem;" onclick="closePaymentModal();showScreen('tracking')">Track Worker</button>
+          <button class="btn-primary" style="flex:1;justify-content:center;font-size:0.85rem;padding:0.6rem;" onclick="closePaymentModal();showScreen('home')">Back to Home</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Invoice Modal -->
+<div class="modal-overlay" id="invoice-modal" role="dialog" aria-modal="true" aria-label="Invoice" onclick="if(event.target===this)document.getElementById('invoice-modal').classList.remove('open')">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Digital Invoice</h2>
+      <button class="modal-close" onclick="document.getElementById('invoice-modal').classList.remove('open')" aria-label="Close">&times;</button>
+    </div>
+    <div class="invoice-body">
+      <div class="invoice-header">
+        <div>
+          <div class="invoice-logo">GIG-SAATHI<small>Cooperative Gig Services Platform</small></div>
+        </div>
+        <div class="invoice-num">
+          <div class="num">INV-2026-1042</div>
+          <div class="date">12 September 2026</div>
+        </div>
+      </div>
+      <div class="invoice-parties">
+        <div>
+          <div class="party-label">Billed To</div>
+          <div class="party-name">Priya Sharma</div>
+          <div class="party-detail">B-204, Vasant Kunj</div>
+          <div class="party-detail">New Delhi – 110070</div>
+        </div>
+        <div>
+          <div class="party-label">Service Provider</div>
+          <div class="party-name">Ramesh Kumar</div>
+          <div class="party-detail">Vasant Kunj Workers Co-op</div>
+          <div class="party-detail">Co-op ID: VKW-2024-0087</div>
+        </div>
+      </div>
+      <table class="invoice-table">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Qty</th>
+            <th>Rate</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Electrical Repair Service<br/><small style="color:var(--text-500);">Fan wiring + switchboard fix</small></td>
+            <td>1</td>
+            <td>₹350</td>
+            <td>₹350</td>
+          </tr>
+          <tr>
+            <td>Platform Service Fee</td>
+            <td>1</td>
+            <td>₹0</td>
+            <td>₹0</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="invoice-total">
+        <span class="total-label">Total Amount</span>
+        <span class="total-amount">₹350</span>
+      </div>
+      <div style="font-size:0.75rem;color:var(--text-500);margin-top:0.75rem;">
+        <strong>Payment Method:</strong> UPI · <strong>Transaction ID:</strong> TXN2026091200342<br/>
+        <strong>Booking ID:</strong> GS-2026-1042 · <strong>Status:</strong> <span style="color:var(--green-700);font-weight:600;">PAID ✓</span>
+      </div>
+      <div class="invoice-footer">
+        <p>Thank you for using GIG-SAATHI. Fair work. Trusted services.</p>
+        <p>This is a prototype invoice for demo purposes.</p>
+        <button class="btn-print" onclick="window.print()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Download / Print Invoice
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SOS Modal -->
+<div class="modal-overlay" id="sos-modal" role="dialog" aria-modal="true" aria-label="SOS Emergency">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-header" style="border-bottom-color:#fecaca;">
+      <h2 class="modal-title" style="color:#dc2626;">SOS Emergency</h2>
+      <button class="modal-close" onclick="document.getElementById('sos-modal').classList.remove('open');document.getElementById('sos-pre').style.display='block';document.getElementById('sos-activated').style.display='none';" aria-label="Close">&times;</button>
+    </div>
+    <div class="sos-modal-inner">
+      <div id="sos-pre">
+        <div class="sos-icon">🚨</div>
+        <div class="sos-title">Emergency Assistance</div>
+        <div class="sos-desc">This will simulate activating emergency assistance mode. In the full product, this would alert your emergency contacts and share your location with the cooperative federation.</div>
+        <button class="btn-sos-confirm" onclick="activateSOS()">Activate Emergency Assistance</button>
+        <button class="btn-sos-cancel" onclick="document.getElementById('sos-modal').classList.remove('open')">Cancel</button>
+      </div>
+      <div id="sos-activated" style="display:none;">
+        <div class="sos-icon">✅</div>
+        <div class="sos-title" style="color:var(--green-700);">Assistance Mode Activated</div>
+        <div class="sos-activated-banner" style="display:block;margin-top:1rem;">
+          <div class="sos-activated-title">Emergency assistance mode activated</div>
+          <div class="sos-activated-desc">📍 Location sharing simulation enabled<br/>📞 Federation notified (simulated)<br/>👮 Your cooperative support team is alerted</div>
+        </div>
+        <p style="font-size:0.78rem;color:var(--text-500);margin-top:0.75rem;">This is a prototype simulation. No real emergency services have been contacted.</p>
+        <button class="btn-book" onclick="document.getElementById('sos-modal').classList.remove('open');document.getElementById('sos-pre').style.display='block';document.getElementById('sos-activated').style.display='none';" style="margin-top:1rem;">Dismiss</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast" role="alert" aria-live="polite">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toast-msg">Action completed</span>
+</div>
+
+<script>
+// ===== MOCK DATA =====
+const workers = [
+  { id: 1, name: 'Ramesh Kumar', initials: 'RK', color: '#2d7a51', skill: 'Electrician', category: 'Electrician', coop: 'Vasant Kunj Workers Co-op', rating: 4.8, jobs: 127, distance: 2.4, price: 350, available: true, experience: '8 years', skills: ['Wiring', 'Fan Installation', 'Switchboard Repair', 'MCB/Fuse', 'LED Lighting'], area: 'Vasant Kunj, Munirka, Mehrauli', reviews: [{name:'Priya S.',stars:5,date:'10 Sep',text:'Excellent work! Fixed the fan wiring and switchboard in under an hour. Very professional.'},{name:'Amit K.',stars:5,date:'5 Sep',text:'Highly recommended. Came on time and solved all electrical issues.'},{name:'Rekha M.',stars:4,date:'1 Sep',text:'Good work. Explained the problem clearly before starting.'}], slots: ['09:00','10:00','10:30','11:00','02:00','04:00'], busySlots: ['12:00','03:00'] },
+  { id: 2, name: 'Sunita Patel', initials: 'SP', color: '#c45e1a', skill: 'Home Cleaning', category: 'Cleaning', coop: 'South Delhi Service Guild', rating: 4.9, jobs: 203, distance: 1.1, price: 280, available: true, experience: '5 years', skills: ['Deep Cleaning', 'Kitchen Cleaning', 'Bathroom Cleaning', 'Sofa/Carpet', 'Post-Party Cleanup'], area: 'Saket, Malviya Nagar, Hauz Khas', reviews: [{name:'Nisha T.',stars:5,date:'11 Sep',text:'Sunita is amazing. Our house sparkled after she was done!'},{name:'Rajan P.',stars:5,date:'8 Sep',text:'Very thorough and honest. Will definitely book again.'}], slots: ['08:00','09:00','10:00','11:00','02:00'], busySlots: ['12:00','01:00'] },
+  { id: 3, name: 'Mohammad Rafiq', initials: 'MR', color: '#7c4dbb', skill: 'Plumber', category: 'Plumber', coop: 'Dwarka Cooperative Society', rating: 4.7, jobs: 89, distance: 3.2, price: 400, available: true, experience: '6 years', skills: ['Pipe Repair', 'Leak Fixing', 'Tap/Valve', 'Water Heater', 'Drainage'], area: 'Dwarka, Janakpuri, Uttam Nagar', reviews: [{name:'Kavya R.',stars:5,date:'9 Sep',text:'Fixed a major pipe leak quickly. Fair pricing and honest service.'},{name:'Suresh D.',stars:4,date:'3 Sep',text:'Good work on the bathroom taps. Arrived on time.'}], slots: ['09:00','11:00','02:00','04:00'], busySlots: ['10:00','12:00'] },
+  { id: 4, name: 'Lakshmi Devi', initials: 'LD', color: '#b45309', skill: 'Caregiver', category: 'Caregiving', coop: 'Vasant Kunj Workers Co-op', rating: 4.9, jobs: 156, distance: 0.8, price: 450, available: true, experience: '7 years', skills: ['Elder Care', 'Post-Surgery Care', 'Child Care', 'Physiotherapy Support'], area: 'Vasant Kunj, Mehrauli, Sultanpur', reviews: [{name:'Family T.',stars:5,date:'10 Sep',text:'Lakshmi cared for my elderly mother with great patience and professionalism.'}], slots: ['07:00','09:00','10:00','02:00','04:00'], busySlots: ['12:00'] },
+  { id: 5, name: 'Deepak Sharma', initials: 'DS', color: '#0369a1', skill: 'Carpenter', category: 'Carpentry', coop: 'South Delhi Service Guild', rating: 4.6, jobs: 74, distance: 4.1, price: 500, available: false, experience: '10 years', skills: ['Furniture Repair', 'Modular Kitchen', 'Door/Window Fix', 'Plywood Work'], area: 'Malviya Nagar, Saket, Panchsheel', reviews: [{name:'Anup G.',stars:5,date:'7 Sep',text:'Built a beautiful bookshelf exactly as I described. Great craftsmanship.'}], slots: ['10:00','12:00','02:00'], busySlots: ['09:00','11:00'] },
+  { id: 6, name: 'Geeta Verma', initials: 'GV', color: '#be185d', skill: 'Home Cleaning', category: 'Cleaning', coop: 'East Delhi Workers Co-op', rating: 4.8, jobs: 168, distance: 2.0, price: 250, available: true, experience: '4 years', skills: ['Regular Cleaning', 'Window Cleaning', 'Floor Polishing', 'Bathroom Deep Clean'], area: 'Laxmi Nagar, Preet Vihar, Mayur Vihar', reviews: [{name:'Pooja M.',stars:5,date:'11 Sep',text:'Excellent work. Very punctual and thorough.'}], slots: ['08:00','09:00','11:00','02:00'], busySlots: ['10:00'] },
+  { id: 7, name: 'Harish Yadav', initials: 'HY', color: '#065f46', skill: 'Appliance Repair', category: 'Appliance Repair', coop: 'Vasant Kunj Workers Co-op', rating: 4.7, jobs: 112, distance: 1.8, price: 300, available: true, experience: '9 years', skills: ['AC Service', 'Washing Machine', 'Refrigerator', 'Microwave', 'Geyser'], area: 'Vasant Kunj, Mahipalpur, Aya Nagar', reviews: [{name:'Rohit P.',stars:5,date:'9 Sep',text:'Fixed my AC in 30 minutes. Very knowledgeable and professional.'}], slots: ['09:00','10:00','11:00','03:00'], busySlots: ['12:00','02:00'] },
+  { id: 8, name: 'Anita Singh', initials: 'AS', color: '#92400e', skill: 'Electrician', category: 'Electrician', coop: 'South Delhi Service Guild', rating: 4.8, jobs: 94, distance: 2.9, price: 380, available: true, experience: '7 years', skills: ['Home Wiring', 'CCTV Installation', 'Inverter Setup', 'Smart Switches'], area: 'Saket, Kalkaji, Lajpat Nagar', reviews: [{name:'Vijay K.',stars:5,date:'8 Sep',text:'Anita knows her work. Installed CCTV cameras perfectly.'}], slots: ['09:00','10:30','12:00','03:00'], busySlots: ['11:00'] },
+  { id: 9, name: 'Raju Prasad', initials: 'RP', color: '#1e3a5f', skill: 'Plumber', category: 'Plumber', coop: 'North Delhi Workers Union', rating: 4.5, jobs: 67, distance: 5.2, price: 350, available: true, experience: '4 years', skills: ['Pipe Fitting', 'Bathroom Tiles', 'Leak Repair', 'Tank Cleaning'], area: 'Rohini, Pitampura, Shalimar Bagh', reviews: [{name:'Manish S.',stars:4,date:'6 Sep',text:'Good work. Arrived a bit late but quality was good.'}], slots: ['10:00','12:00','02:00','04:00'], busySlots: [] },
+  { id: 10, name: 'Kamla Bai', initials: 'KB', color: '#713f12', skill: 'Caregiver', category: 'Caregiving', coop: 'East Delhi Workers Co-op', rating: 4.6, jobs: 88, distance: 3.5, price: 400, available: false, experience: '5 years', skills: ['Elder Care', 'Cooking', 'Medicine Management', 'Patient Support'], area: 'Mayur Vihar, Kondli, Mandawali', reviews: [{name:'Shalini T.',stars:5,date:'5 Sep',text:'Very caring and responsible. My parents love her company.'}], slots: ['07:00','09:00','02:00'], busySlots: ['12:00'] },
+  { id: 11, name: 'Vikas Malhotra', initials: 'VM', color: '#374151', skill: 'Carpenter', category: 'Carpentry', coop: 'Dwarka Cooperative Society', rating: 4.7, jobs: 45, distance: 4.8, price: 450, available: true, experience: '6 years', skills: ['Bed/Sofa Repair', 'Almirah Fix', 'Wooden Flooring', 'Custom Furniture'], area: 'Dwarka, Uttam Nagar, Vikaspuri', reviews: [{name:'Meena P.',stars:5,date:'4 Sep',text:'Made a custom wardrobe in 2 days. Excellent quality.'}], slots: ['09:00','11:00','02:00','04:00'], busySlots: [] },
+  { id: 12, name: 'Suresh Pal', initials: 'SuP', color: '#1d4ed8', skill: 'Appliance Repair', category: 'Appliance Repair', coop: 'North Delhi Workers Union', rating: 4.4, jobs: 58, distance: 6.0, price: 280, available: true, experience: '3 years', skills: ['TV Repair', 'Set-Top Box', 'Mixer/Grinder', 'Iron Box', 'Fans'], area: 'Rohini, Rithala, Shalimar Bagh', reviews: [{name:'Rahul N.',stars:4,date:'3 Sep',text:'Fixed the TV. Reasonable rates.'}], slots: ['10:00','12:00','03:00'], busySlots: ['09:00'] },
+];
+
+const jobRequests = [
+  { id: 'J001', title: 'Electrical Repair', customer: 'Priya Sharma', location: '2.4 km · Vasant Kunj', time: '10:30 AM', price: '₹350', category: 'Electrician', icon: 'bolt' },
+  { id: 'J002', title: 'Fan Installation', customer: 'Amit Khanna', location: '1.8 km · Mehrauli', time: '01:00 PM', price: '₹250', category: 'Electrician', icon: 'bolt' },
+  { id: 'J003', title: 'Switchboard Repair', customer: 'Rekha Sharma', location: '3.1 km · Munirka', time: '03:00 PM', price: '₹180', category: 'Electrician', icon: 'bolt' },
+];
+
+const fedWorkers = [
+  { name: 'Ramesh Kumar', skill: 'Electrician', coop: 'Vasant Kunj Co-op', jobs: 127, rating: 4.8, status: 'available' },
+  { name: 'Sunita Patel', skill: 'Cleaning', coop: 'South Delhi Guild', jobs: 203, rating: 4.9, status: 'busy' },
+  { name: 'Mohammad Rafiq', skill: 'Plumber', coop: 'Dwarka Co-op', jobs: 89, rating: 4.7, status: 'available' },
+  { name: 'Lakshmi Devi', skill: 'Caregiving', coop: 'Vasant Kunj Co-op', jobs: 156, rating: 4.9, status: 'busy' },
+  { name: 'Deepak Sharma', skill: 'Carpentry', coop: 'South Delhi Guild', jobs: 74, rating: 4.6, status: 'pending' },
+  { name: 'Geeta Verma', skill: 'Cleaning', coop: 'East Delhi Co-op', jobs: 168, rating: 4.8, status: 'available' },
+  { name: 'Harish Yadav', skill: 'Appliance Repair', coop: 'Vasant Kunj Co-op', jobs: 112, rating: 4.7, status: 'available' },
+  { name: 'Anita Singh', skill: 'Electrician', coop: 'South Delhi Guild', jobs: 94, rating: 4.8, status: 'busy' },
+];
+
+// ===== STATE =====
+let currentLang = 'en';
+let currentWorker = workers[0];
+let selectedPaymentMethod = 'upi';
+let jobStates = {}; // job id -> 'pending'|'accepted'|'started'|'completed'
+let currentEarnings = 1850;
+let pendingJobCount = 3;
+
+// ===== TRANSLATIONS =====
+const translations = {
+  'find-service': { en: 'Find a Service', hi: 'सेवा खोजें' },
+  'join-worker': { en: 'Join as Worker', hi: 'कामगार बनें' },
+  'book-now': { en: 'Book Now', hi: 'अभी बुक करें' },
+  'tagline': { en: '"Fair work. Trusted services. Stronger cooperatives."', hi: '"न्यायपूर्ण काम। विश्वसनीय सेवाएं। मजबूत सहकारी।"' },
+  'find-title': { en: 'Find a Service', hi: 'सेवा खोजें' },
+  'services-title': { en: 'Our Services', hi: 'हमारी सेवाएं' },
+  'worker': { en: 'Worker', hi: 'कामगार' },
+  'bookings': { en: 'Bookings', hi: 'बुकिंग' },
+};
+
+// ===== LANG =====
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('[data-key]').forEach(el => {
+    const key = el.getAttribute('data-key');
+    if (translations[key]) el.textContent = translations[key][lang];
+  });
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById('lang-' + lang)?.classList.add('active');
+  document.getElementById('lang-' + lang + '-mob')?.classList.add('active');
+  showToast(lang === 'hi' ? 'भाषा बदली: हिन्दी' : 'Language: English');
+}
+
+// ===== SCREEN ROUTING =====
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + id);
+  if (el) { el.classList.add('active'); window.scrollTo(0, 0); }
+}
+
+// ===== ROLE SWITCHER =====
+function switchRole(role) {
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('role-' + role)?.classList.add('active');
+  if (role === 'customer') showScreen('home');
+  else if (role === 'worker') { showScreen('worker-dashboard'); renderJobRequests(); }
+  else if (role === 'federation') { showScreen('federation'); renderFedTable(); }
+}
+
+// ===== MOBILE MENU =====
+function toggleMobileMenu() {
+  document.getElementById('mobile-menu').classList.toggle('open');
+}
+
+// ===== SERVICE CATEGORY =====
+function selectServiceCategory(cat) {
+  showScreen('find-service');
+  filterByCategory(cat);
+}
+
+function filterByPill(cat, btn) {
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  filterByCategory(cat);
+}
+
+function filterByCategory(cat) {
+  const filtered = cat === 'All' ? workers : workers.filter(w => w.category === cat);
+  renderWorkers(filtered);
+  document.getElementById('results-count').textContent = filtered.length + ' worker' + (filtered.length !== 1 ? 's' : '') + ' found';
+}
+
+function filterWorkers() {
+  const query = document.getElementById('search-input').value.toLowerCase();
+  const filtered = query ? workers.filter(w => 
+    w.name.toLowerCase().includes(query) || 
+    w.skill.toLowerCase().includes(query) || 
+    w.category.toLowerCase().includes(query)
+  ) : workers;
+  renderWorkers(filtered);
+  document.getElementById('results-count').textContent = filtered.length + ' worker' + (filtered.length !== 1 ? 's' : '') + ' found';
+}
+
+// ===== RENDER WORKERS =====
+// TODO: Replace with React Query hook + WorkerCard component
+// INTEGRATION POINT: Worker list fetched from GET /api/workers with filters
+// INTEGRATION POINT: Each worker's verified-badge status comes from e-Shram API response
+// INTEGRATION POINT: Real-time availability (available/busy) from Redis cache via WebSocket
+function renderWorkers(list) {
+  const grid = document.getElementById('worker-grid');
+  grid.innerHTML = list.map(w => `
+    <div class="worker-card" onclick="openWorkerProfile(${w.id})" tabindex="0" role="button" aria-label="View profile of ${w.name}">
+      <div class="avail-badge ${w.available ? 'avail-available' : 'avail-busy'}">${w.available ? 'Available' : 'Busy'}</div>
+      <div class="worker-card-top">
+        <div class="worker-avatar" style="background:${w.color};">${w.initials}</div>
+        <div class="worker-main">
+          <div class="worker-name">${w.name}</div>
+          <div class="worker-skill">${w.skill}</div>
+          <div class="worker-coop">${w.coop}</div>
+          <div style="margin-top:0.3rem;"><span class="verified-badge"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:11px;height:11px;"><polyline points="20 6 9 17 4 12"/></svg>Cooperative Verified</span></div>
+        </div>
+      </div>
+      <div class="worker-stats">
+        <span class="stat-pill"><span class="rating-star">★</span>${w.rating}</span>
+        <span class="stat-pill"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>${w.jobs} jobs</span>
+        <span class="stat-pill"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${w.distance} km</span>
+      </div>
+      <div class="worker-card-footer">
+        <div class="worker-price">₹${w.price} <span>starting</span></div>
+        <button class="btn-view" onclick="event.stopPropagation();openWorkerProfile(${w.id})">View Profile</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== WORKER PROFILE =====
+// TODO: Replace with React Router navigation to /worker/:id
+// INTEGRATION POINT: Fetch full profile from GET /api/workers/{id}
+// INTEGRATION POINT: Fetch verification status from e-Shram API here
+//   → backend proxy: GET /api/eshram/verify/{uin}
+// INTEGRATION POINT: Fetch reviews from GET /api/workers/{id}/reviews
+function openWorkerProfile(id) {
+  currentWorker = workers.find(w => w.id === id);
+  if (!currentWorker) return;
+  const w = currentWorker;
+  const layout = document.getElementById('profile-layout');
+  const starsHtml = (rating) => {
+    const full = Math.floor(rating);
+    return '★'.repeat(full) + (rating % 1 >= 0.5 ? '½' : '') + '☆'.repeat(5 - Math.ceil(rating));
+  };
+  layout.innerHTML = `
+    <div class="profile-sidebar">
+      <div class="profile-avatar-lg" style="background:${w.color};">${w.initials}</div>
+      <div class="profile-name">${w.name}</div>
+      <div class="profile-skill">${w.skill} · ${w.experience}</div>
+      <div class="profile-coop">${w.coop}</div>
+      <div class="profile-badges">
+        <div class="profile-badge"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Identity Verified</div>
+        <div class="profile-badge"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Skill Verified</div>
+        <div class="profile-badge"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Cooperative Member</div>
+        ${w.available ? '<div class="profile-badge"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Available Today</div>' : ''}
+      </div>
+      <div class="profile-stat-grid">
+        <div class="profile-stat">
+          <div class="profile-stat-num" style="color:#f59e0b;">★ ${w.rating}</div>
+          <div class="profile-stat-label">Rating</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-num">${w.jobs}</div>
+          <div class="profile-stat-label">Jobs Done</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-num">${w.distance} km</div>
+          <div class="profile-stat-label">Distance</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-num">₹${w.price}</div>
+          <div class="profile-stat-label">Starting</div>
+        </div>
+      </div>
+      <div style="font-size:0.78rem;color:var(--text-500);margin:0.5rem 0;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        ${w.area}
+      </div>
+      <button class="btn-book" onclick="openBookingModal()" ${!w.available ? 'style="background:var(--border);color:var(--text-300);cursor:not-allowed;" disabled' : ''}>
+        ${w.available ? (currentLang === 'hi' ? 'अभी बुक करें' : 'Book This Worker') : 'Currently Unavailable'}
+      </button>
+    </div>
+    <div class="profile-main">
+      <div class="card">
+        <div class="card-title">Skills & Expertise</div>
+        <div class="skill-chips">${w.skills.map(s => `<span class="skill-chip">${s}</span>`).join('')}</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Customer Reviews</div>
+        ${w.reviews.map(r => `
+          <div class="review-item">
+            <div class="review-header">
+              <span class="review-name">${r.name}</span>
+              <span class="review-stars">${'★'.repeat(r.stars)}</span>
+              <span class="review-date">${r.date} Sep</span>
+            </div>
+            <p class="review-text">${r.text}</p>
+          </div>
+        `).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">Available Slots — Today</div>
+        <div class="slots-grid">
+          ${w.slots.map(s => `<button class="slot-btn" onclick="this.closest('.slots-grid').querySelectorAll('.slot-btn:not(.unavailable)').forEach(b=>b.classList.remove('selected'));this.classList.add('selected')">${s}</button>`).join('')}
+          ${w.busySlots.map(s => `<button class="slot-btn unavailable" disabled>${s}</button>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  showScreen('worker-profile');
+}
+
+// ===== BOOKING =====
+function openBookingModal() {
+  const w = currentWorker;
+  document.getElementById('booking-step-1').style.display = 'block';
+  document.getElementById('booking-step-2').classList.add('hidden');
+  
+  const today = new Date();
+  document.getElementById('booking-date').value = today.toISOString().split('T')[0];
+  document.getElementById('booking-price-display').textContent = '₹' + w.price;
+  document.getElementById('booking-summary-content').innerHTML = `
+    <div class="booking-row"><span class="booking-row-label">Service</span><span class="booking-row-val">${w.skill}</span></div>
+    <div class="booking-row"><span class="booking-row-label">Worker</span><span class="booking-row-val">${w.name}</span></div>
+    <div class="booking-row"><span class="booking-row-label">Cooperative</span><span class="booking-row-val">${w.coop}</span></div>
+  `;
+  document.getElementById('booking-modal').classList.add('open');
+}
+
+function closeBookingModal() {
+  document.getElementById('booking-modal').classList.remove('open');
+}
+
+function confirmBooking() {
+  // INTEGRATION POINT: Replace setTimeout with real API call:
+  //   POST /api/bookings → { workerId, date, time, address, price }
+  //   Response: { bookingId, status: 'confirmed' }
+  // INTEGRATION POINT: Push booking data to PostgreSQL via FastAPI
+  // INTEGRATION POINT: Trigger worker notification (FCM push + SMS via Celery task)
+  const btn = document.getElementById('confirm-btn');
+  btn.textContent = 'Confirming...';
+  btn.disabled = true;
+  setTimeout(() => {
+    const w = currentWorker;
+    const date = document.getElementById('booking-date').value;
+    const time = document.getElementById('booking-time').value;
+    const bookingId = 'GS-2026-' + (1040 + Math.floor(Math.random() * 20));
+    const dateObj = new Date(date);
+    const formattedDate = dateObj.toLocaleDateString('en-IN', {day:'numeric',month:'long',year:'numeric'});
+    
+    document.getElementById('booking-step-1').style.display = 'none';
+    document.getElementById('booking-step-2').classList.remove('hidden');
+    document.getElementById('booking-id-display').textContent = 'Booking ID: ' + bookingId;
+    document.getElementById('conf-worker').textContent = w.name;
+    document.getElementById('conf-service').textContent = w.skill;
+    document.getElementById('conf-date').textContent = formattedDate;
+    document.getElementById('conf-time').textContent = time;
+    document.getElementById('conf-amount').textContent = '₹' + w.price;
+    
+    btn.textContent = 'Confirm Booking';
+    btn.disabled = false;
+    showToast('Booking confirmed! ID: ' + bookingId);
+  }, 1200);
+}
+
+// ===== PAYMENT =====
+function openPayment() {
+  const w = currentWorker;
+  closeBookingModal();
+  document.getElementById('payment-step-1').style.display = 'block';
+  document.getElementById('payment-step-2').classList.add('hidden');
+  document.getElementById('payment-amount-display').textContent = '₹' + w.price;
+  document.getElementById('pay-btn-amount').textContent = '₹' + w.price;
+  document.getElementById('payment-modal').classList.add('open');
+}
+
+function closePaymentModal() {
+  document.getElementById('payment-modal').classList.remove('open');
+}
+
+function selectPayment(method, el) {
+  selectedPaymentMethod = method;
+  document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('upi-field').classList.toggle('hidden', method !== 'upi');
+  document.getElementById('card-field').classList.toggle('hidden', method !== 'card');
+  document.getElementById('cash-field').classList.toggle('hidden', method !== 'cash');
+}
+
+function processPayment() {
+  // INTEGRATION POINT: Replace setTimeout with real payment API call:
+  //   POST /api/payments/initiate → Razorpay UPI/Card Intent
+  // INTEGRATION POINT: On Razorpay callback → POST /api/payments/verify (HMAC check)
+  // INTEGRATION POINT: Record transaction in PostgreSQL (transactions table)
+  // INTEGRATION POINT: Auto-generate PDF invoice via reportlab (backend)
+  const btn = document.getElementById('pay-now-btn');
+  btn.textContent = 'Processing...';
+  btn.disabled = true;
+  setTimeout(() => {
+    const w = currentWorker;
+    const txId = 'TXN' + Date.now().toString().slice(-10);
+    document.getElementById('tx-id').textContent = txId;
+    document.getElementById('tx-amount').textContent = '₹' + w.price;
+    document.getElementById('tx-method').textContent = selectedPaymentMethod.toUpperCase();
+    document.getElementById('tx-worker').textContent = w.name;
+    document.getElementById('tx-service').textContent = w.skill;
+    document.getElementById('payment-step-1').style.display = 'none';
+    document.getElementById('payment-step-2').classList.remove('hidden');
+    btn.textContent = 'Pay ₹' + w.price;
+    btn.disabled = false;
+    showToast('Payment successful! ₹' + w.price + ' paid.');
+  }, 1800);
+}
+
+function openInvoice() {
+  document.getElementById('invoice-modal').classList.add('open');
+}
+
+// ===== SOS =====
+function openSOS() {
+  document.getElementById('sos-modal').classList.add('open');
+}
+
+function activateSOS() {
+  document.getElementById('sos-pre').style.display = 'none';
+  document.getElementById('sos-activated').style.display = 'block';
+  showToast('Emergency assistance mode activated!');
+}
+
+// ===== WORKER DASHBOARD =====
+function renderJobRequests() {
+  const container = document.getElementById('job-requests');
+  if (!container) return;
+  container.innerHTML = jobRequests.map(job => {
+    const state = jobStates[job.id] || 'pending';
+    return `
+    <div class="job-card" id="job-card-${job.id}">
+      <div class="job-card-header">
+        <div class="job-service-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+        <div class="job-main">
+          <div class="job-title">${job.title}</div>
+          <div class="job-customer">Customer: ${job.customer}</div>
+        </div>
+      </div>
+      <div class="job-meta">
+        <span class="job-meta-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${job.location}</span>
+        <span class="job-meta-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${job.time}</span>
+      </div>
+      <div class="job-price">${job.price}</div>
+      ${state === 'pending' ? `
+        <div class="job-actions">
+          <button class="btn-accept" onclick="acceptJob('${job.id}', '${job.price}')">Accept Job</button>
+          <button class="btn-reject" onclick="rejectJob('${job.id}')">Reject</button>
+        </div>
+      ` : state === 'accepted' ? `
+        <div class="job-status-accepted show">
+          <div class="status-accepted-banner"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Job Accepted ✓</div>
+          <div class="job-progress-btns">
+            <button class="btn-start" onclick="startJob('${job.id}')">Start Job</button>
+          </div>
+        </div>
+      ` : state === 'started' ? `
+        <div class="job-status-accepted show">
+          <div class="status-accepted-banner" style="background:var(--orange-50);border-color:var(--orange-100);color:var(--orange-600);">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Job in Progress...
+          </div>
+          <div class="job-progress-btns">
+            <button class="btn-complete" onclick="completeJob('${job.id}', '${job.price}')">Mark as Complete</button>
+          </div>
+        </div>
+      ` : `
+        <div class="status-accepted-banner" style="background:var(--green-100);border-color:var(--green-200,#a7d9bb);color:var(--green-700);">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Job Completed ✓
+        </div>
+      `}
+    </div>
+    `;
+  }).join('');
+}
+
+function acceptJob(id, priceStr) {
+  jobStates[id] = 'accepted';
+  renderJobRequests();
+  showToast('Job accepted! Customer has been notified.');
+}
+
+function rejectJob(id) {
+  const card = document.getElementById('job-card-' + id);
+  if (card) { card.style.opacity = '0.4'; card.style.pointerEvents = 'none'; }
+  pendingJobCount = Math.max(0, pendingJobCount - 1);
+  document.getElementById('pending-count').textContent = pendingJobCount;
+  showToast('Job request declined.');
+}
+
+function startJob(id) {
+  jobStates[id] = 'started';
+  renderJobRequests();
+  showToast('Job started! Good luck.');
+}
+
+function completeJob(id, priceStr) {
+  jobStates[id] = 'completed';
+  const amount = parseInt(priceStr.replace('₹',''));
+  currentEarnings += amount;
+  pendingJobCount = Math.max(0, pendingJobCount - 1);
+  document.getElementById('worker-earnings').textContent = '₹' + currentEarnings.toLocaleString('en-IN');
+  document.getElementById('worker-earnings-trend').textContent = '↑ ₹' + amount + ' last job';
+  document.getElementById('pending-count').textContent = pendingJobCount;
+  renderJobRequests();
+  showToast('Job completed! ₹' + amount + ' added to your earnings.');
+}
+
+// ===== FEDERATION TABLE =====
+function renderFedTable() {
+  const tbody = document.getElementById('fed-workers-table');
+  if (!tbody) return;
+  tbody.innerHTML = fedWorkers.map(w => `
+    <tr>
+      <td style="font-weight:600;">${w.name}</td>
+      <td>${w.skill}</td>
+      <td style="font-size:0.78rem;color:var(--text-500);">${w.coop}</td>
+      <td>${w.jobs}</td>
+      <td><span style="color:#f59e0b;font-weight:600;">★ ${w.rating}</span></td>
+      <td>
+        <span class="status-dot">
+          <span class="dot ${w.status === 'available' ? 'dot-green' : w.status === 'busy' ? 'dot-orange' : 'dot-gray'}"></span>
+          ${w.status.charAt(0).toUpperCase() + w.status.slice(1)}
+        </span>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ===== ETA COUNTDOWN =====
+let etaValue = 18;
+function startEtaCountdown() {
+  setInterval(() => {
+    if (etaValue > 1) {
+      etaValue--;
+      const el = document.getElementById('eta-num');
+      if (el) el.textContent = etaValue;
+    }
+  }, 4000);
+}
+
+// ===== TOAST =====
+let toastTimer;
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  lucide.createIcons();
+  renderWorkers(workers);
+  renderFedTable();
+  startEtaCountdown();
+  
+  // Set today's date as default
+  const today = new Date().toISOString().split('T')[0];
+  const dateInput = document.getElementById('booking-date');
+  if (dateInput) dateInput.value = today;
+
+  // Search on enter
+  document.getElementById('search-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') filterWorkers();
+  });
+
+  // Handle keyboard on worker cards
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.target.classList.contains('worker-card')) {
+      e.target.click();
+    }
+  });
+  
+  // Close modals on Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+    }
+  });
+});
+</script>
+</body>
+</html>

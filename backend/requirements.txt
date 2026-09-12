@@ -1,0 +1,64 @@
+# GIG-SAATHI — Backend Python Dependencies
+# Team TECH TITANS | SIH 2026 | Problem SIH26089
+# Install with: pip install -r requirements.txt
+
+# ── Web Framework ────────────────────────────────────────────────
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+python-multipart==0.0.9
+
+# ── Database ─────────────────────────────────────────────────────
+psycopg2-binary==2.9.9          # PostgreSQL adapter
+sqlalchemy==2.0.35               # ORM for database models
+alembic==1.13.2                  # Database migrations
+
+# ── Caching & Task Queue ─────────────────────────────────────────
+redis==5.0.8                     # Redis client
+celery==5.4.0                    # Async task queue (notifications, invoices)
+
+# ── Authentication & Security ────────────────────────────────────
+PyJWT==2.9.0                     # JSON Web Tokens
+passlib[bcrypt]==1.7.4           # Password hashing
+python-jose[cryptography]==3.3.0 # JWT utilities
+
+# ── HTTP Client (External API Integrations) ──────────────────────
+requests==2.32.3                 # Synchronous HTTP (e-Shram, UMANG APIs)
+httpx==0.27.2                    # Async HTTP client
+
+# ── External API Integrations ────────────────────────────────────
+# e-Shram API  — worker identity and UIN verification
+# UMANG API    — government scheme eligibility
+# Razorpay SDK — payment gateway
+razorpay==1.4.2
+
+# ── Data Validation & Serialisation ─────────────────────────────
+pydantic==2.9.2                  # Data validation (FastAPI models)
+pydantic-settings==2.5.2         # Settings management via .env
+
+# ── Utilities ────────────────────────────────────────────────────
+python-dotenv==1.0.1             # Load .env configuration
+Pillow==10.4.0                   # Image processing (worker photo uploads)
+reportlab==4.2.2                 # PDF invoice generation
+qrcode[pil]==8.0                 # QR code for digital invoice
+phonenumbers==8.13.45            # Indian phone number validation
+
+# ── SMS / Notifications ──────────────────────────────────────────
+# MSG91 integration handled via requests library
+# Twilio SDK (optional IVR fallback)
+twilio==9.3.3
+
+# ── Geospatial ───────────────────────────────────────────────────
+geopy==2.4.1                     # Distance calculations (worker proximity)
+
+# ── Development & Testing ────────────────────────────────────────
+pytest==8.3.3
+pytest-asyncio==0.24.0
+httpx==0.27.2                    # Used for FastAPI test client
+factory-boy==3.3.1               # Test fixtures
+Faker==28.4.1                    # Generate realistic Indian test data
+
+# ── Code Quality ─────────────────────────────────────────────────
+black==24.8.0                    # Code formatter
+isort==5.13.2                    # Import sorter
+flake8==7.1.1                    # Linter
+mypy==1.11.2                     # Type checker
