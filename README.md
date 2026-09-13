@@ -6,17 +6,6 @@
 
 ## Team: TECH TITANS
 
-| Role | Member |
-|---|---|
-| Team Leader | — |
-| Frontend Developer | — |
-| Backend Developer | — |
-| UI/UX Designer | — |
-| Data Analyst | — |
-| Research & Documentation | — |
-
----
-
 ## Problem Statement
 
 **SIH26089 — Cooperative Gig Services Platform For Household & Community Services**
